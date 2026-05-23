@@ -371,6 +371,14 @@
             cursor: default;
             margin-top: 15px;
         }
+        
+        .loading-text {
+            grid-column: span 2;
+            text-align: center;
+            color: var(--accent-gold);
+            font-size: 8px;
+            padding: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -518,8 +526,26 @@
 
 </div>
 
-<script>
-    let appointment = {
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+    // Sua configuração obtida no painel
+    const firebaseConfig = {
+        apiKey: "AIzaSyDj_hgJOa4JOKd8uKbHRCpDyoiuvm_9240",
+        authDomain: "don-bigode.firebaseapp.com",
+        projectId: "don-bigode",
+        storageBucket: "don-bigode.firebasestorage.app",
+        messagingSenderId: "937007874147",
+        appId: "1:937007874147:web:2141fbffc6f5b8fc8c7856"
+    };
+
+    // Inicializa o Firebase e o Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Variável global temporária do agendamento atual
+    window.appointment = {
         service: '',
         price: '',
         name: '',
@@ -547,22 +573,22 @@
 
     let currentNavDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
 
-    function selectService(serviceName, servicePrice) {
-        appointment.service = serviceName;
-        appointment.price = servicePrice;
+    window.selectService = function(serviceName, servicePrice) {
+        window.appointment.service = serviceName;
+        window.appointment.price = servicePrice;
         
         document.getElementById('step-services').classList.add('hidden');
         document.getElementById('step-name').classList.remove('hidden');
         document.getElementById('client-name').focus();
     }
 
-    function confirmName() {
+    window.confirmName = function() {
         const nameInput = document.getElementById('client-name').value.trim();
         if(nameInput === "") {
             alert("POR FAVOR, INSIRA SEU NOME PARA CONTINUAR!");
             return;
         }
-        appointment.name = nameInput;
+        window.appointment.name = nameInput;
         
         document.getElementById('step-name').classList.add('hidden');
         document.getElementById('step-date').classList.remove('hidden');
@@ -617,7 +643,7 @@
         }
     }
 
-    function changeMonth(direction) {
+    window.changeMonth = function(direction) {
         const testDate = new Date(currentNavDate.getFullYear(), currentNavDate.getMonth() + direction, 1);
         const limitDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
         
@@ -628,28 +654,39 @@
     }
 
     function selectDate(dateText, dateKey, isSunday) {
-        appointment.dateText = dateText;
-        appointment.dateKey = dateKey;
-        appointment.isSunday = isSunday;
+        window.appointment.dateText = dateText;
+        window.appointment.dateKey = dateKey;
+        window.appointment.isSunday = isSunday;
         
         document.getElementById('step-date').classList.add('hidden');
         document.getElementById('step-time').classList.remove('hidden');
         renderHours();
     }
 
-    function renderHours() {
+    async function renderHours() {
         const grid = document.getElementById('time-grid-container');
-        grid.innerHTML = '';
+        grid.innerHTML = '<div class="loading-text">CARREGANDO NUVEM...</div>';
 
-        if (appointment.isSunday) {
+        if (window.appointment.isSunday) {
             grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
             return;
         }
 
-        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
-        let dayAppointments = globalData[appointment.dateKey] || [];
-        let takenHoursList = dayAppointments.map(app => app.hour);
+        let takenHoursList = [];
+        try {
+            const docRef = doc(db, "agenda", window.appointment.dateKey);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const dayData = docSnap.data();
+                if (dayData.appointments) {
+                    takenHoursList = dayData.appointments.map(app => app.hour);
+                }
+            }
+        } catch (error) {
+            console.error("Erro ao buscar horários: ", error);
+        }
 
+        grid.innerHTML = '';
         let availableCount = 0;
 
         baseHours.forEach(hour => {
@@ -668,36 +705,67 @@
         }
     }
 
-    function finalizeAppointment(selectedTime) {
-        appointment.time = selectedTime;
+    async function finalizeAppointment(selectedTime) {
+        window.appointment.time = selectedTime;
 
-        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
-        if (!globalData[appointment.dateKey]) {
-            globalData[appointment.dateKey] = [];
+        try {
+            const docRef = doc(db, "agenda", window.appointment.dateKey);
+            const docSnap = await getDoc(docRef);
+            let currentAppointments = [];
+
+            if (docSnap.exists()) {
+                currentAppointments = docSnap.data().appointments || [];
+            }
+
+            // Validação anti-furo de última hora
+            const isAlreadyTaken = currentAppointments.some(app => app.hour === selectedTime);
+            if (isAlreadyTaken) {
+                alert("ESTE HORÁRIO ACABOU DE SER RESERVADO POR OUTRO CLIENTE! POR FAVOR, ESCOLHA OUTRO.");
+                renderHours();
+                return;
+            }
+
+            currentAppointments.push({
+                hour: selectedTime,
+                name: window.appointment.name,
+                service: window.appointment.service
+            });
+
+            await setDoc(docRef, { appointments: currentAppointments }, { merge: true });
+
+            // Registro global para facilitar a leitura da agenda do barbeiro
+            const globalIndexRef = doc(db, "config", "active_dates");
+            const indexSnap = await getDoc(globalIndexRef);
+            let activeDatesList = [];
+            if (indexSnap.exists()) {
+                activeDatesList = indexSnap.data().list || [];
+            }
+            if (!activeDatesList.includes(window.appointment.dateKey)) {
+                activeDatesList.push(window.appointment.dateKey);
+                await setDoc(globalIndexRef, { list: activeDatesList });
+            }
+
+        } catch (error) {
+            console.error("Erro ao salvar agendamento: ", error);
+            alert("ERRO DE CONEXÃO AO SALVAR. TENTE NOVAMENTE.");
+            return;
         }
-        
-        globalData[appointment.dateKey].push({
-            hour: selectedTime,
-            name: appointment.name,
-            service: appointment.service
-        });
-        localStorage.setItem('don_bigode_appointments_v2', JSON.stringify(globalData));
 
         const phoneNumber = "5521969140228";
         const message = `Olá, Don Bigode! Gostaria de realizar um agendamento:\n\n` +
-                        `👤 Nome: ${appointment.name}\n` +
-                        `✂️ Serviço: ${appointment.service} (${appointment.price})\n` +
-                        `📅 Data: ${appointment.dateText}\n` +
-                        `⏱ Horário: ${appointment.time}`;
+                        `👤 Nome: ${window.appointment.name}\n` +
+                        `✂️ Serviço: ${window.appointment.service} (${window.appointment.price})\n` +
+                        `📅 Data: ${window.appointment.dateText}\n` +
+                        `⏱ Horário: ${window.appointment.time}`;
 
         const encryptedMessage = encodeURIComponent(message);
         window.open(`https://wa.me/${phoneNumber}?text=${encryptedMessage}`, '_blank');
 
         document.getElementById('client-name').value = '';
-        goBack('services');
+        window.goBack('services');
     }
 
-    function openAdminPanel() {
+    window.openAdminPanel = function() {
         document.getElementById('step-services').classList.add('hidden');
         document.getElementById('step-name').classList.add('hidden');
         document.getElementById('step-date').classList.add('hidden');
@@ -707,55 +775,95 @@
         renderAdminAgenda();
     }
 
-    function renderAdminAgenda() {
+    async function renderAdminAgenda() {
         const container = document.getElementById('admin-agenda-container');
-        container.innerHTML = '';
+        container.innerHTML = '<div class="loading-text">CARREGANDO AGENDA DA NUVEM...</div>';
 
-        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
-        let datesHasAppointments = Object.keys(globalData).filter(key => globalData[key].length > 0);
-
-        if (datesHasAppointments.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">NENHUM AGENDAMENTO ATIVO NA AGENDA.</p>';
-            return;
-        }
-
-        datesHasAppointments.sort().forEach(dateKey => {
-            const [year, month, day] = dateKey.split('-');
-            const cardBlock = document.createElement('div');
-            cardBlock.className = 'admin-card';
-            cardBlock.innerHTML = `<div style="color:var(--accent-gold); font-size:8px; text-transform:uppercase;">📅 DIA: ${day}/${month}/${year}</div>`;
-
-            globalData[dateKey].forEach((app, index) => {
-                const row = document.createElement('div');
-                row.className = 'admin-row';
-                row.innerHTML = `
-                    <div class="admin-info">
-                        <span style="color:#fff; font-weight:bold;">⏱ ${app.hour}</span>
-                        <span>👤 ${app.name}</span>
-                        <span style="color:var(--text-gray); font-size:6px;">✂️ ${app.service}</span>
-                    </div>
-                    <button class="admin-btn-cancel" onclick="cancelSlot('${dateKey}', ${index})">LIBERAR</button>
-                `;
-                cardBlock.appendChild(row);
-            });
-
-            container.appendChild(cardBlock);
-        });
-    }
-
-    function cancelSlot(dateKey, index) {
-        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
-        if (globalData[dateKey]) {
-            globalData[dateKey].splice(index, 1);
-            if (globalData[dateKey].length === 0) {
-                delete globalData[dateKey];
+        try {
+            const globalIndexRef = doc(db, "config", "active_dates");
+            const indexSnap = await getDoc(globalIndexRef);
+            
+            if (!indexSnap.exists()) {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">NENHUM AGENDAMENTO ATIVO NA AGENDA.</p>';
+                return;
             }
-            localStorage.setItem('don_bigode_appointments_v2', JSON.stringify(globalData));
-            renderAdminAgenda();
+
+            let activeDatesList = indexSnap.data().list || [];
+            activeDatesList.sort();
+
+            container.innerHTML = '';
+            let totalAppointmentsCount = 0;
+
+            for (const dateKey of activeDatesList) {
+                const docRef = doc(db, "agenda", dateKey);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    let appointments = docSnap.data().appointments || [];
+                    if (appointments.length > 0) {
+                        totalAppointmentsCount += appointments.length;
+                        const [year, month, day] = dateKey.split('-');
+                        const cardBlock = document.createElement('div');
+                        cardBlock.className = 'admin-card';
+                        cardBlock.innerHTML = `<div style="color:var(--accent-gold); font-size:8px; text-transform:uppercase;">📅 DIA: ${day}/${month}/${year}</div>`;
+
+                        appointments.sort((a, b) => a.hour.localeCompare(b.hour)).forEach((app, index) => {
+                            const row = document.createElement('div');
+                            row.className = 'admin-row';
+                            
+                            // Criação de escopo seguro para o botão do painel administrativo funcionar corretamente
+                            const btnCancel = document.createElement('button');
+                            btnCancel.className = 'admin-btn-cancel';
+                            btnCancel.innerText = 'LIBERAR';
+                            btnCancel.onclick = function() { cancelSlot(dateKey, index); };
+
+                            row.innerHTML = `
+                                <div class="admin-info">
+                                    <span style="color:#fff; font-weight:bold;">⏱ ${app.hour}</span>
+                                    <span>👤 ${app.name}</span>
+                                    <span style="color:var(--text-gray); font-size:6px;">✂️ ${app.service}</span>
+                                </div>
+                            `;
+                            row.appendChild(btnCancel);
+                            cardBlock.appendChild(row);
+                        });
+
+                        container.appendChild(cardBlock);
+                    }
+                }
+            }
+
+            if (totalAppointmentsCount === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">NENHUM AGENDAMENTO ATIVO NA AGENDA.</p>';
+            }
+
+        } catch (error) {
+            console.error("Erro ao renderizar painel: ", error);
+            container.innerHTML = '<p style="text-align:center; color:var(--danger-red); font-size:8px; padding: 30px 0;">ERRO AO BUSCAR DADOS.</p>';
         }
     }
 
-    function goBack(toStep) {
+    async function cancelSlot(dateKey, index) {
+        if (!confirm("DESEJA REALMENTE LIBERAR ESSE HORÁRIO?")) return;
+
+        try {
+            const docRef = doc(db, "agenda", dateKey);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                let appointments = docSnap.data().appointments || [];
+                appointments.splice(index, 1);
+
+                await setDoc(docRef, { appointments: appointments }, { merge: true });
+                renderAdminAgenda();
+            }
+        } catch (error) {
+            console.error("Erro ao cancelar: ", error);
+            alert("ERRO AO REMOVER O AGENDAMENTO.");
+        }
+    }
+
+    window.goBack = function(toStep) {
         document.getElementById('step-services').classList.add('hidden');
         document.getElementById('step-name').classList.add('hidden');
         document.getElementById('step-date').classList.add('hidden');
