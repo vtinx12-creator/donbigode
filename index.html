@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don Bigode Barbearia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --container-bg: #141414;
+            --card-bg: #1c1c1c;
+            --card-hover: #252525;
+            --text-white: #ffffff;
+            --text-gray: #8a8a8a;
+            --pixel-border: #3a3a3a;
+            --accent-gold: #ffcc00;
+            --danger-red: #ff3333;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            background-image: 
+                linear-gradient(335deg, #101010 23px, transparent 23px),
+                linear-gradient(155deg, #151515 23px, transparent 23px),
+                linear-gradient(335deg, #101010 23px, transparent 23px),
+                linear-gradient(155deg, #151515 23px, transparent 23px);
+            background-size: 58px 58px;
+            background-position: 0px 2px, 4px 30px, 30px 32px, 34px 2px;
+            color: var(--text-white);
+            font-family: 'Press Start 2P', monospace;
+            display: flex;
+            justify-content: center;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--container-bg);
+            padding: 24px 16px;
+            box-sizing: border-box;
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 4px var(--bg-color), 0 0 0 8px #222;
+            margin: 20px 10px;
+        }
+
+        .banner-container {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .banner-img {
+            width: 100%;
+            height: auto;
+            border: 4px solid var(--pixel-border);
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-img {
+            width: 140px;
+            height: auto;
+            margin: 15px auto;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            filter: drop-shadow(0px 4px 0px #000);
+        }
+
+        h1 {
+            font-size: 16px;
+            margin: 15px 0 8px 0;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            color: #fff;
+            text-shadow: 2px 2px 0px #333;
+        }
+
+        .subtitle {
+            font-size: 8px;
+            color: var(--text-gray);
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .section-title {
+            font-size: 10px;
+            text-align: center;
+            margin: 25px 0 15px 0;
+            color: #fff;
+            text-transform: uppercase;
+            border-bottom: 2px dashed var(--pixel-border);
+            padding-bottom: 8px;
+        }
+
+        .services-list, .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .service-card, .time-card, .admin-card {
+            background-color: var(--card-bg);
+            border: 4px solid var(--pixel-border);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 3px 3px 0px #000;
+        }
+
+        .service-card:active, .time-card:active, .btn-pixel:active, .admin-btn-cancel:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000;
+            border-color: #fff;
+        }
+
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .service-title {
+            font-size: 9px;
+            font-weight: bold;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .service-price {
+            font-size: 9px;
+            color: #fff;
+            background-color: #000;
+            padding: 4px 6px;
+            border: 2px solid var(--pixel-border);
+            white-space: nowrap;
+        }
+
+        .service-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 7px;
+            color: var(--text-gray);
+            text-transform: uppercase;
+        }
+
+        .premium-badge {
+            color: var(--accent-gold);
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .input-pixel {
+            background-color: #000;
+            border: 4px solid var(--pixel-border);
+            color: #fff;
+            font-family: 'Press Start 2P', monospace;
+            padding: 12px;
+            font-size: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+            text-align: center;
+        }
+
+        .input-pixel:focus {
+            border-color: #fff;
+        }
+
+        .btn-pixel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 9px;
+            background-color: #fff;
+            color: #000;
+            border: 4px solid var(--pixel-border);
+            padding: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        /* Estrutura do Calendário Pixel Art */
+        .calendar-wrapper {
+            background-color: var(--card-bg);
+            border: 4px solid var(--pixel-border);
+            padding: 10px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .calendar-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .calendar-btn:active {
+            color: var(--accent-gold);
+        }
+
+        .calendar-month-year {
+            font-size: 8px;
+            text-transform: uppercase;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 6px;
+            color: var(--text-gray);
+            margin-bottom: 10px;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+        }
+
+        .calendar-day {
+            text-align: center;
+            padding: 8px 2px;
+            font-size: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background-color: #101010;
+        }
+
+        .calendar-day:hover:not(.past) {
+            border-color: #fff;
+        }
+
+        .calendar-day.empty {
+            background: none;
+            cursor: default;
+            border: none;
+        }
+
+        .calendar-day.sunday {
+            color: var(--danger-red);
+        }
+
+        .calendar-day.past {
+            color: #444444 !important;
+            background-color: #080808;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+
+        /* Grid de Horários */
+        .time-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .time-card {
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            padding: 12px 5px;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            font-family: 'Press Start 2P', monospace;
+            font-size: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            align-self: center;
+            margin-top: 10px;
+        }
+
+        /* Layout do Painel do Barbeiro */
+        .admin-card {
+            cursor: default;
+            gap: 4px;
+        }
+
+        .admin-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px dashed var(--pixel-border);
+            padding-top: 8px;
+            margin-top: 4px;
+        }
+
+        .admin-info {
+            font-size: 7px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .admin-btn-cancel {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 6px;
+            background-color: var(--danger-red);
+            color: #fff;
+            border: 2px solid #fff;
+            padding: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 2px 2px 0px #000;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 7px;
+            color: var(--text-gray);
+            border-top: 4px dashed var(--pixel-border);
+            padding-top: 25px;
+            margin-top: 35px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-whatsapp {
+            color: #000;
+            background-color: #fff;
+            text-decoration: none;
+            display: block;
+            margin: 15px auto 5px auto;
+            padding: 12px;
+            border: 4px solid var(--pixel-border);
+            box-shadow: 4px 4px 0px #000;
+            text-transform: uppercase;
+            width: 85%;
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+
+        .admin-access-link {
+            font-size: 6px;
+            color: #222;
+            text-decoration: none;
+            cursor: default;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="banner-container">
+        <img src="banner.jpeg" alt="Don Bigode Banner" class="banner-img">
+    </div>
+
+    <div class="header">
+        <img src="logo.png" alt="Don Bigode Logo" class="logo-img">
+        <h1>Don Bigode</h1>
+        <p class="subtitle">[ Barbearia Profissional ]</p>
+    </div>
+
+    <div id="step-services">
+        <div class="section-title">Selecione o Serviço</div>
+        <div class="services-list">
+            <div class="service-card" onclick="selectService('🔌 Corte Máquina', 'R$ 40,00')">
+                <div class="service-header">
+                    <span class="service-title">🔌 Corte Máquina</span>
+                    <span class="service-price">R$ 40,00</span>
+                </div>
+                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('💈 Máquina e Tesoura', 'R$ 45,00')">
+                <div class="service-header">
+                    <span class="service-title">💈 Máquina e Tesoura</span>
+                    <span class="service-price">R$ 45,00</span>
+                </div>
+                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('✂️ Corte Tesoura', 'R$ 50,00')">
+                <div class="service-header">
+                    <span class="service-title">✂️ Corte Tesoura</span>
+                    <span class="service-price">R$ 50,00</span>
+                </div>
+                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('🪒 Barba', 'R$ 35,00')">
+                <div class="service-header">
+                    <span class="service-title">🪒 Barba</span>
+                    <span class="service-price">R$ 35,00</span>
+                </div>
+                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('👑 Cabelo e Barba', 'R$ 60,00')">
+                <div class="service-header">
+                    <span class="service-title">👑 Cabelo e Barba</span>
+                    <span class="service-price">R$ 60,00</span>
+                </div>
+                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('✨ Barba + Esfoliação', 'R$ 45,00')">
+                <div class="service-header">
+                    <span class="service-title">✨ Barba + Esfoliação</span>
+                    <span class="service-price">R$ 45,00</span>
+                </div>
+                <div class="service-meta"><span>⏱ Duração: 55m</span><span>[ Agendar ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('🎮 Corte Infantil', 'R$ 50,00')">
+                <div class="service-header">
+                    <span class="service-title">🎮 Corte Infantil</span>
+                    <span class="service-price">R$ 50,00</span>
+                </div>
+                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('⭐ Combo Premium', 'R$ 80,00')">
+                <div class="service-header">
+                    <span class="service-title premium-badge">⭐ Combo Premium</span>
+                    <span class="service-price">R$ 80,00</span>
+                </div>
+                <div class="service-meta"><span>Cabelo, Barba, Sobrancelha + Pigmentação</span></div>
+                <div class="service-meta"><span>⏱ Duração: 1h 20m</span><span style="color: #ffcc00;">[ RETRÔ UP ]</span></div>
+            </div>
+
+            <div class="service-card" onclick="selectService('🔥 Premium Ultimate', 'R$ 100,00')">
+                <div class="service-header">
+                    <span class="service-title premium-badge">🔥 Premium Ultimate</span>
+                    <span class="service-price">R$ 100,00</span>
+                </div>
+                <div class="service-meta"><span>Premium + Cera Quente e Esfoliação</span></div>
+                <div class="service-meta"><span>⏱ Duração: 2h</span><span style="color: #ffcc00;">[ MAX LEVEL ]</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="step-name" class="step-container hidden">
+        <div class="section-title">Seu Nome</div>
+        <input type="text" id="client-name" class="input-pixel" placeholder="DIGITE SEU NOME...">
+        <button class="btn-pixel" onclick="confirmName()">Avançar ➡️</button>
+        <button class="btn-back" onclick="goBack('services')">[ Voltar ]</button>
+    </div>
+
+    <div id="step-date" class="step-container hidden">
+        <div class="section-title">Escolha o Dia</div>
+        
+        <div class="calendar-wrapper">
+            <div class="calendar-header">
+                <button class="calendar-btn" onclick="changeMonth(-1)">[ &lt; ]</button>
+                <div id="calendar-title" class="calendar-month-year">...</div>
+                <button class="calendar-btn" onclick="changeMonth(1)">[ &gt; ]</button>
+            </div>
+            <div class="calendar-weekdays">
+                <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SAB</div>
+            </div>
+            <div id="calendar-days-container" class="calendar-days">
+                </div>
+        </div>
+
+        <button class="btn-back" onclick="goBack('name')">[ Voltar ]</button>
+    </div>
+
+    <div id="step-time" class="step-container hidden">
+        <div class="section-title">Horários Disponíveis</div>
+        <p style="text-align: center; color: var(--accent-gold); font-size: 8px; margin: 0 0 10px 0;">Sessões de 1 hora</p>
+        <div id="time-grid-container" class="time-grid">
+            </div>
+        <button class="btn-back" onclick="goBack('date')">[ Voltar ]</button>
+    </div>
+
+    <div id="step-admin" class="step-container hidden">
+        <div class="section-title" style="color: var(--accent-gold);">Painel Don Bigode</div>
+        <p style="text-align: center; font-size: 7px; color: var(--text-gray); margin: 0 0 10px 0;">Clique em LIBERAR para restaurar o horário</p>
+        <div id="admin-agenda-container" style="display: flex; flex-direction: column; gap: 12px;">
+            </div>
+        <button class="btn-pixel" style="margin-top: 15px;" onclick="goBack('services')">Sair do Painel</button>
+    </div>
+
+    <div class="footer">
+        <p>📍 LOCALIZAÇÃO:<br>R. ALBERTO TORRES, 189 - CIRCULAR<br>DUQUE DE CAXIAS - RJ</p>
+        <p>📞 CONTATO: (21) 96914-0228</p>
+        <a href="https://wa.me/5521969140228" target="_blank" class="btn-whatsapp">Iniciar Chat</a>
+        <p style="font-size: 5px; color: #444; margin-top: 10px;">PRESS START TO INSERT COIN</p>
+        <span class="admin-access-link" onclick="openAdminPanel()">.</span>
+    </div>
+
+</div>
+
+<script>
+    let appointment = {
+        service: '',
+        price: '',
+        name: '',
+        dateText: '',
+        dateKey: '',
+        isSunday: false,
+        time: ''
+    };
+
+    const baseHours = [
+        "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00",
+        "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00",
+        "18:00 - 19:00", "19:00 - 20:00"
+    ];
+
+    const monthNames = [
+        "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",
+        "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"
+    ];
+
+    const weekDaysShort = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
+
+    const REAL_TODAY = new Date();
+    REAL_TODAY.setHours(0, 0, 0, 0); 
+
+    let currentNavDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
+
+    function selectService(serviceName, servicePrice) {
+        appointment.service = serviceName;
+        appointment.price = servicePrice;
+        
+        document.getElementById('step-services').classList.add('hidden');
+        document.getElementById('step-name').classList.remove('hidden');
+        document.getElementById('client-name').focus();
+    }
+
+    function confirmName() {
+        const nameInput = document.getElementById('client-name').value.trim();
+        if(nameInput === "") {
+            alert("POR FAVOR, INSIRA SEU NOME PARA CONTINUAR!");
+            return;
+        }
+        appointment.name = nameInput;
+        
+        document.getElementById('step-name').classList.add('hidden');
+        document.getElementById('step-date').classList.remove('hidden');
+        renderCalendar();
+    }
+
+    function renderCalendar() {
+        const year = currentNavDate.getFullYear();
+        const month = currentNavDate.getMonth();
+
+        document.getElementById('calendar-title').innerText = `${monthNames[month]} ${year}`;
+
+        const container = document.getElementById('calendar-days-container');
+        container.innerHTML = '';
+
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+
+        for (let i = 0; i < firstDayIndex; i++) {
+            const div = document.createElement('div');
+            div.className = 'calendar-day empty';
+            container.appendChild(div);
+        }
+
+        for (let day = 1; day <= lastDay; day++) {
+            const dateObj = new Date(year, month, day);
+            dateObj.setHours(0,0,0,0);
+
+            const dayOfWeek = dateObj.getDay();
+            const dayNumStr = day.toString().padStart(2, '0');
+            const monthNumStr = (month + 1).toString().padStart(2, '0');
+            
+            const storageKey = `${year}-${monthNumStr}-${dayNumStr}`;
+            const displayDateText = `${weekDaysShort[dayOfWeek]} (${dayNumStr}/${monthNumStr})`;
+
+            const div = document.createElement('div');
+            div.className = 'calendar-day';
+            div.innerText = day;
+
+            if (dateObj < REAL_TODAY) {
+                div.classList.add('past');
+            } else {
+                if (dayOfWeek === 0) {
+                    div.classList.add('sunday');
+                    div.onclick = function() { selectDate(displayDateText, storageKey, true); };
+                } else {
+                    div.onclick = function() { selectDate(displayDateText, storageKey, false); };
+                }
+            }
+
+            container.appendChild(div);
+        }
+    }
+
+    function changeMonth(direction) {
+        const testDate = new Date(currentNavDate.getFullYear(), currentNavDate.getMonth() + direction, 1);
+        const limitDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
+        
+        if (testDate < limitDate) return;
+
+        currentNavDate.setMonth(currentNavDate.getMonth() + direction);
+        renderCalendar();
+    }
+
+    function selectDate(dateText, dateKey, isSunday) {
+        appointment.dateText = dateText;
+        appointment.dateKey = dateKey;
+        appointment.isSunday = isSunday;
+        
+        document.getElementById('step-date').classList.add('hidden');
+        document.getElementById('step-time').classList.remove('hidden');
+        renderHours();
+    }
+
+    function renderHours() {
+        const grid = document.getElementById('time-grid-container');
+        grid.innerHTML = '';
+
+        if (appointment.isSunday) {
+            grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
+            return;
+        }
+
+        // Carrega dados estruturados: chave da data apontando para array de objetos {hour, name, service}
+        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
+        let dayAppointments = globalData[appointment.dateKey] || [];
+        
+        // Extrai apenas as strings de horários ocupados para verificação rápida
+        let takenHoursList = dayAppointments.map(app => app.hour);
+
+        let availableCount = 0;
+
+        baseHours.forEach(hour => {
+            if (!takenHoursList.includes(hour)) {
+                availableCount++;
+                const card = document.createElement('div');
+                card.className = 'time-card';
+                card.innerText = hour;
+                card.onclick = function() { finalizeAppointment(hour); };
+                grid.appendChild(card);
+            }
+        });
+
+        if (availableCount === 0) {
+            grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
+        }
+    }
+
+    function finalizeAppointment(selectedTime) {
+        appointment.time = selectedTime;
+
+        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
+        if (!globalData[appointment.dateKey]) {
+            globalData[appointment.dateKey] = [];
+        }
+        
+        // Salva os metadados completos do agendamento para o barbeiro saber quem desmarcar
+        globalData[appointment.dateKey].push({
+            hour: selectedTime,
+            name: appointment.name,
+            service: appointment.service
+        });
+        localStorage.setItem('don_bigode_appointments_v2', JSON.stringify(globalData));
+
+        const phoneNumber = "5521969140228";
+        const message = `Olá, Don Bigode! Gostaria de realizar um agendamento:\n\n` +
+                        `👤 Nome: ${appointment.name}\n` +
+                        `✂️ Serviço: ${appointment.service} (${appointment.price})\n` +
+                        `📅 Data: ${appointment.dateText}\n` +
+                        `⏱ Horário: ${appointment.time}`;
+
+        const encryptedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/${phoneNumber}?text=${encryptedMessage}`, '_blank');
+
+        document.getElementById('client-name').value = '';
+        goBack('services');
+    }
+
+    /* =======================================================
+       SISTEMA EXCLUSIVO DO BARBEIRO (NÍVEL OPERACIONAL FILLAPP)
+       ======================================================= */
+    function openAdminPanel() {
+        // Altera a visualização para o container do painel
+        document.getElementById('step-services').classList.add('hidden');
+        document.getElementById('step-name').classList.add('hidden');
+        document.getElementById('step-date').classList.add('hidden');
+        document.getElementById('step-time').classList.add('hidden');
+        document.getElementById('step-admin').classList.remove('hidden');
+
+        renderAdminAgenda();
+    }
+
+    function renderAdminAgenda() {
+        const container = document.getElementById('admin-agenda-container');
+        container.innerHTML = '';
+
+        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
+        let datesHasAppointments = Object.keys(globalData).filter(key => globalData[key].length > 0);
+
+        if (datesHasAppointments.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">NENHUM AGENDAMENTO ATIVO NA AGENDA.</p>';
+            return;
+        }
+
+        // Ordena as datas de forma cronológica para o barbeiro organizar o dia
+        datesHasAppointments.sort().forEach(dateKey => {
+            // Conversão da key ISO (AAAA-MM-DD) para exibição legível do barbeiro
+            const [year, month, day] = dateKey.split('-');
+            
+            const cardBlock = document.createElement('div');
+            cardBlock.className = 'admin-card';
+            cardBlock.innerHTML = `<div style="color:var(--accent-gold); font-size:8px; text-transform:uppercase;">📅 DIA: ${day}/${month}/${year}</div>`;
+
+            // Lista os horários reservados dentro daquela data específica
+            globalData[dateKey].forEach((app, index) => {
+                const row = document.createElement('div');
+                row.className = 'admin-row';
+                row.innerHTML = `
+                    <div class="admin-info">
+                        <span style="color:#fff; font-weight:bold;">⏱ ${app.hour}</span>
+                        <span>👤 ${app.name}</span>
+                        <span style="color:var(--text-gray); font-size:6px;">✂️ ${app.service}</span>
+                    </div>
+                    <button class="admin-btn-cancel" onclick="cancelSlot('${dateKey}', ${index})">LIBERAR</button>
+                `;
+                cardBlock.appendChild(row);
+            });
+
+            container.appendChild(cardBlock);
+        });
+    }
+
+    // Função de cancelamento cirúrgico - Restaura o slot no ato da confirmação
+    function cancelSlot(dateKey, index) {
+        let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
+        
+        if (globalData[dateKey]) {
+            // Remove o elemento selecionado da lista
+            globalData[dateKey].splice(index, 1);
+            
+            // Se a data ficou limpa de agendamentos, remove a chave para economizar memória
+            if (globalData[dateKey].length === 0) {
+                delete globalData[dateKey];
+            }
+
+            localStorage.setItem('don_bigode_appointments_v2', JSON.stringify(globalData));
+            
+            // Atualiza a view do painel imediatamente
+            renderAdminAgenda();
+        }
+    }
+
+    function goBack(toStep) {
+        document.getElementById('step-services').classList.add('hidden');
+        document.getElementById('step-name').classList.add('hidden');
+        document.getElementById('step-date').classList.add('hidden');
+        document.getElementById('step-time').classList.add('hidden');
+        document.getElementById('step-admin').classList.add('hidden');
+
+        if(toStep === 'services') {
+            document.getElementById('step-services').classList.remove('hidden');
+        } else if(toStep === 'name') {
+            document.getElementById('step-name').classList.remove('hidden');
+        } else if(toStep === 'date') {
+            document.getElementById('step-date').classList.remove('hidden');
+        }
+    }
+</script>
+
+</body>
+</html>
