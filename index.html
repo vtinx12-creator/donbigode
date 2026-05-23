@@ -71,18 +71,20 @@
         }
 
         .logo-img {
-            width: 140px;
+            width: 100%;
+            max-width: 280px;
             height: auto;
             margin: 15px auto;
             display: block;
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            filter: drop-shadow(0px 4px 0px #000);
+            border: 4px solid var(--pixel-border);
+            box-shadow: 4px 4px 0px #000;
         }
 
         h1 {
             font-size: 16px;
-            margin: 15px 0 8px 0;
+            margin: 25px 0 8px 0;
             text-transform: uppercase;
             letter-spacing: -1px;
             color: #fff;
@@ -199,7 +201,6 @@
             box-shadow: 4px 4px 0px #000;
         }
 
-        /* Estrutura do Calendário Pixel Art */
         .calendar-wrapper {
             background-color: var(--card-bg);
             border: 4px solid var(--pixel-border);
@@ -277,7 +278,6 @@
             text-decoration: line-through;
         }
 
-        /* Grid de Horários */
         .time-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -304,7 +304,6 @@
             margin-top: 10px;
         }
 
-        /* Layout do Painel do Barbeiro */
         .admin-card {
             cursor: default;
             gap: 4px;
@@ -487,7 +486,7 @@
                 <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SAB</div>
             </div>
             <div id="calendar-days-container" class="calendar-days">
-                </div>
+            </div>
         </div>
 
         <button class="btn-back" onclick="goBack('name')">[ Voltar ]</button>
@@ -497,7 +496,7 @@
         <div class="section-title">Horários Disponíveis</div>
         <p style="text-align: center; color: var(--accent-gold); font-size: 8px; margin: 0 0 10px 0;">Sessões de 1 hora</p>
         <div id="time-grid-container" class="time-grid">
-            </div>
+        </div>
         <button class="btn-back" onclick="goBack('date')">[ Voltar ]</button>
     </div>
 
@@ -505,7 +504,7 @@
         <div class="section-title" style="color: var(--accent-gold);">Painel Don Bigode</div>
         <p style="text-align: center; font-size: 7px; color: var(--text-gray); margin: 0 0 10px 0;">Clique em LIBERAR para restaurar o horário</p>
         <div id="admin-agenda-container" style="display: flex; flex-direction: column; gap: 12px;">
-            </div>
+        </div>
         <button class="btn-pixel" style="margin-top: 15px;" onclick="goBack('services')">Sair do Painel</button>
     </div>
 
@@ -647,11 +646,8 @@
             return;
         }
 
-        // Carrega dados estruturados: chave da data apontando para array de objetos {hour, name, service}
         let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
         let dayAppointments = globalData[appointment.dateKey] || [];
-        
-        // Extrai apenas as strings de horários ocupados para verificação rápida
         let takenHoursList = dayAppointments.map(app => app.hour);
 
         let availableCount = 0;
@@ -680,7 +676,6 @@
             globalData[appointment.dateKey] = [];
         }
         
-        // Salva os metadados completos do agendamento para o barbeiro saber quem desmarcar
         globalData[appointment.dateKey].push({
             hour: selectedTime,
             name: appointment.name,
@@ -702,11 +697,7 @@
         goBack('services');
     }
 
-    /* =======================================================
-       SISTEMA EXCLUSIVO DO BARBEIRO (NÍVEL OPERACIONAL FILLAPP)
-       ======================================================= */
     function openAdminPanel() {
-        // Altera a visualização para o container do painel
         document.getElementById('step-services').classList.add('hidden');
         document.getElementById('step-name').classList.add('hidden');
         document.getElementById('step-date').classList.add('hidden');
@@ -728,16 +719,12 @@
             return;
         }
 
-        // Ordena as datas de forma cronológica para o barbeiro organizar o dia
         datesHasAppointments.sort().forEach(dateKey => {
-            // Conversão da key ISO (AAAA-MM-DD) para exibição legível do barbeiro
             const [year, month, day] = dateKey.split('-');
-            
             const cardBlock = document.createElement('div');
             cardBlock.className = 'admin-card';
             cardBlock.innerHTML = `<div style="color:var(--accent-gold); font-size:8px; text-transform:uppercase;">📅 DIA: ${day}/${month}/${year}</div>`;
 
-            // Lista os horários reservados dentro daquela data específica
             globalData[dateKey].forEach((app, index) => {
                 const row = document.createElement('div');
                 row.className = 'admin-row';
@@ -756,22 +743,14 @@
         });
     }
 
-    // Função de cancelamento cirúrgico - Restaura o slot no ato da confirmação
     function cancelSlot(dateKey, index) {
         let globalData = JSON.parse(localStorage.getItem('don_bigode_appointments_v2')) || {};
-        
         if (globalData[dateKey]) {
-            // Remove o elemento selecionado da lista
             globalData[dateKey].splice(index, 1);
-            
-            // Se a data ficou limpa de agendamentos, remove a chave para economizar memória
             if (globalData[dateKey].length === 0) {
                 delete globalData[dateKey];
             }
-
             localStorage.setItem('don_bigode_appointments_v2', JSON.stringify(globalData));
-            
-            // Atualiza a view do painel imediatamente
             renderAdminAgenda();
         }
     }
