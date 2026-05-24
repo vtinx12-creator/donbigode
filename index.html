@@ -530,7 +530,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    // Sua configuração obtida no painel
+    // Configuração obtida no painel do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDj_hgJOa4JOKd8uKbHRCpDyoiuvm_9240",
         authDomain: "don-bigode.firebaseapp.com",
@@ -759,10 +759,13 @@
                         `⏱ Horário: ${window.appointment.time}`;
 
         const encryptedMessage = encodeURIComponent(message);
-        window.open(`https://wa.me/${phoneNumber}?text=${encryptedMessage}`, '_blank');
-
+        
         document.getElementById('client-name').value = '';
         window.goBack('services');
+
+        // --- CORREÇÃO COMPATIBILIDADE IPHONE (iOS) ---
+        // Redirecionamento na mesma aba para burlar a trava de segurança do Safari contra popups em blocos assíncronos.
+        window.location.href = `https://wa.me/${phoneNumber}?text=${encryptedMessage}`;
     }
 
     window.openAdminPanel = function() {
@@ -811,7 +814,6 @@
                             const row = document.createElement('div');
                             row.className = 'admin-row';
                             
-                            // Criação de escopo seguro para o botão do painel administrativo funcionar corretamente
                             const btnCancel = document.createElement('button');
                             btnCancel.className = 'admin-btn-cancel';
                             btnCancel.innerText = 'LIBERAR';
