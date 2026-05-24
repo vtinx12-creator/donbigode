@@ -365,13 +365,21 @@
         }
 
         .admin-access-link {
-            font-size: 6px;
-            color: #222;
-            text-decoration: none;
-            cursor: default;
-            margin-top: 15px;
+            font-size: 8px;
+            color: var(--accent-gold);
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
         }
         
+        #admin-login-box {
+            background-color: #000;
+            border: 4px solid var(--pixel-border);
+            padding: 15px;
+            margin-top: 15px;
+        }
+
         .loading-text {
             grid-column: span 2;
             text-align: center;
@@ -483,7 +491,6 @@
 
     <div id="step-date" class="step-container hidden">
         <div class="section-title">Escolha o Dia</div>
-        
         <div class="calendar-wrapper">
             <div class="calendar-header">
                 <button class="calendar-btn" onclick="changeMonth(-1)">[ &lt; ]</button>
@@ -493,26 +500,22 @@
             <div class="calendar-weekdays">
                 <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SAB</div>
             </div>
-            <div id="calendar-days-container" class="calendar-days">
-            </div>
+            <div id="calendar-days-container" class="calendar-days"></div>
         </div>
-
         <button class="btn-back" onclick="goBack('name')">[ Voltar ]</button>
     </div>
 
     <div id="step-time" class="step-container hidden">
         <div class="section-title">Horários Disponíveis</div>
         <p style="text-align: center; color: var(--accent-gold); font-size: 8px; margin: 0 0 10px 0;">Sessões de 1 hora</p>
-        <div id="time-grid-container" class="time-grid">
-        </div>
+        <div id="time-grid-container" class="time-grid"></div>
         <button class="btn-back" onclick="goBack('date')">[ Voltar ]</button>
     </div>
 
     <div id="step-admin" class="step-container hidden">
         <div class="section-title" style="color: var(--accent-gold);">Painel Don Bigode</div>
         <p style="text-align: center; font-size: 7px; color: var(--text-gray); margin: 0 0 10px 0;">Clique em LIBERAR para restaurar o horário</p>
-        <div id="admin-agenda-container" style="display: flex; flex-direction: column; gap: 12px;">
-        </div>
+        <div id="admin-agenda-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
         <button class="btn-pixel" style="margin-top: 15px;" onclick="goBack('services')">Sair do Painel</button>
     </div>
 
@@ -520,8 +523,16 @@
         <p>📍 LOCALIZAÇÃO:<br>R. ALBERTO TORRES, 189 - CIRCULAR<br>DUQUE DE CAXIAS - RJ</p>
         <p>📞 CONTATO: (21) 96914-0228</p>
         <a href="https://wa.me/5521969140228" target="_blank" class="btn-whatsapp">Iniciar Chat</a>
-        <p style="font-size: 5px; color: #444; margin-top: 10px;">PRESS START TO INSERT COIN</p>
-        <span class="admin-access-link" onclick="openAdminPanel()">.</span>
+        
+        <span class="admin-access-link" id="admin-trigger" onclick="toggleLoginBox()">ENTRAR COMO ADMINISTRADOR</span>
+        
+        <div id="admin-login-box" class="hidden">
+            <p style="color:#fff; font-size:7px; margin-bottom:10px;">ACESSO RESTRITO</p>
+            <input type="password" id="admin-password-input" class="input-pixel" placeholder="SENHA...">
+            <button class="btn-pixel" style="margin-top:10px; width:100%;" onclick="checkAdminPassword()">ENTRAR</button>
+        </div>
+
+        <p style="font-size: 5px; color: #444; margin-top: 25px;">PRESS START TO INSERT COIN</p>
     </div>
 
 </div>
@@ -530,7 +541,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-    // Configuração obtida no painel do Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDj_hgJOa4JOKd8uKbHRCpDyoiuvm_9240",
         authDomain: "don-bigode.firebaseapp.com",
@@ -540,105 +550,50 @@
         appId: "1:937007874147:web:2141fbffc6f5b8fc8c7856"
     };
 
-    // Inicializa o Firebase e o Firestore
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Variável global temporária do agendamento atual
-    window.appointment = {
-        service: '',
-        price: '',
-        name: '',
-        dateText: '',
-        dateKey: '',
-        isSunday: false,
-        time: ''
-    };
+    window.appointment = { service: '', price: '', name: '', dateText: '', dateKey: '', isSunday: false, time: '' };
 
-    const baseHours = [
-        "10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00",
-        "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00",
-        "18:00 - 19:00", "19:00 - 20:00"
-    ];
-
-    const monthNames = [
-        "JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO",
-        "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"
-    ];
-
+    const baseHours = ["10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00", "18:00 - 19:00", "19:00 - 20:00"];
+    const monthNames = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
     const weekDaysShort = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
-
-    const REAL_TODAY = new Date();
-    REAL_TODAY.setHours(0, 0, 0, 0); 
-
+    const REAL_TODAY = new Date(); REAL_TODAY.setHours(0, 0, 0, 0); 
     let currentNavDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
 
+    // FUNÇÕES DE NAVEGAÇÃO E AGENDAMENTO
     window.selectService = function(serviceName, servicePrice) {
-        window.appointment.service = serviceName;
-        window.appointment.price = servicePrice;
-        
-        document.getElementById('step-services').classList.add('hidden');
-        document.getElementById('step-name').classList.remove('hidden');
+        window.appointment.service = serviceName; window.appointment.price = servicePrice;
+        document.getElementById('step-services').classList.add('hidden'); document.getElementById('step-name').classList.remove('hidden');
         document.getElementById('client-name').focus();
     }
 
     window.confirmName = function() {
         const nameInput = document.getElementById('client-name').value.trim();
-        if(nameInput === "") {
-            alert("POR FAVOR, INSIRA SEU NOME PARA CONTINUAR!");
-            return;
-        }
+        if(nameInput === "") { alert("POR FAVOR, INSIRA SEU NOME PARA CONTINUAR!"); return; }
         window.appointment.name = nameInput;
-        
-        document.getElementById('step-name').classList.add('hidden');
-        document.getElementById('step-date').classList.remove('hidden');
+        document.getElementById('step-name').classList.add('hidden'); document.getElementById('step-date').classList.remove('hidden');
         renderCalendar();
     }
 
     function renderCalendar() {
-        const year = currentNavDate.getFullYear();
-        const month = currentNavDate.getMonth();
-
+        const year = currentNavDate.getFullYear(); const month = currentNavDate.getMonth();
         document.getElementById('calendar-title').innerText = `${monthNames[month]} ${year}`;
-
-        const container = document.getElementById('calendar-days-container');
-        container.innerHTML = '';
-
-        const firstDayIndex = new Date(year, month, 1).getDay();
-        const lastDay = new Date(year, month + 1, 0).getDate();
+        const container = document.getElementById('calendar-days-container'); container.innerHTML = '';
+        const firstDayIndex = new Date(year, month, 1).getDay(); const lastDay = new Date(year, month + 1, 0).getDate();
 
         for (let i = 0; i < firstDayIndex; i++) {
-            const div = document.createElement('div');
-            div.className = 'calendar-day empty';
-            container.appendChild(div);
+            const div = document.createElement('div'); div.className = 'calendar-day empty'; container.appendChild(div);
         }
-
         for (let day = 1; day <= lastDay; day++) {
-            const dateObj = new Date(year, month, day);
-            dateObj.setHours(0,0,0,0);
-
-            const dayOfWeek = dateObj.getDay();
-            const dayNumStr = day.toString().padStart(2, '0');
-            const monthNumStr = (month + 1).toString().padStart(2, '0');
-            
-            const storageKey = `${year}-${monthNumStr}-${dayNumStr}`;
-            const displayDateText = `${weekDaysShort[dayOfWeek]} (${dayNumStr}/${monthNumStr})`;
-
-            const div = document.createElement('div');
-            div.className = 'calendar-day';
-            div.innerText = day;
-
-            if (dateObj < REAL_TODAY) {
-                div.classList.add('past');
-            } else {
-                if (dayOfWeek === 0) {
-                    div.classList.add('sunday');
-                    div.onclick = function() { selectDate(displayDateText, storageKey, true); };
-                } else {
-                    div.onclick = function() { selectDate(displayDateText, storageKey, false); };
-                }
+            const dateObj = new Date(year, month, day); dateObj.setHours(0,0,0,0);
+            const dayOfWeek = dateObj.getDay(); const dayNumStr = day.toString().padStart(2, '0'); const monthNumStr = (month + 1).toString().padStart(2, '0');
+            const storageKey = `${year}-${monthNumStr}-${dayNumStr}`; const displayDateText = `${weekDaysShort[dayOfWeek]} (${dayNumStr}/${monthNumStr})`;
+            const div = document.createElement('div'); div.className = 'calendar-day'; div.innerText = day;
+            if (dateObj < REAL_TODAY) { div.classList.add('past'); } else {
+                if (dayOfWeek === 0) { div.classList.add('sunday'); div.onclick = function() { selectDate(displayDateText, storageKey, true); };
+                } else { div.onclick = function() { selectDate(displayDateText, storageKey, false); }; }
             }
-
             container.appendChild(div);
         }
     }
@@ -646,239 +601,128 @@
     window.changeMonth = function(direction) {
         const testDate = new Date(currentNavDate.getFullYear(), currentNavDate.getMonth() + direction, 1);
         const limitDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
-        
         if (testDate < limitDate) return;
-
-        currentNavDate.setMonth(currentNavDate.getMonth() + direction);
-        renderCalendar();
+        currentNavDate.setMonth(currentNavDate.getMonth() + direction); renderCalendar();
     }
 
     function selectDate(dateText, dateKey, isSunday) {
-        window.appointment.dateText = dateText;
-        window.appointment.dateKey = dateKey;
-        window.appointment.isSunday = isSunday;
-        
-        document.getElementById('step-date').classList.add('hidden');
-        document.getElementById('step-time').classList.remove('hidden');
+        window.appointment.dateText = dateText; window.appointment.dateKey = dateKey; window.appointment.isSunday = isSunday;
+        document.getElementById('step-date').classList.add('hidden'); document.getElementById('step-time').classList.remove('hidden');
         renderHours();
     }
 
     async function renderHours() {
-        const grid = document.getElementById('time-grid-container');
-        grid.innerHTML = '<div class="loading-text">CARREGANDO NUVEM...</div>';
-
-        if (window.appointment.isSunday) {
-            grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
-            return;
-        }
-
+        const grid = document.getElementById('time-grid-container'); grid.innerHTML = '<div class="loading-text">CARREGANDO NUVEM...</div>';
+        if (window.appointment.isSunday) { grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>'; return; }
         let takenHoursList = [];
         try {
-            const docRef = doc(db, "agenda", window.appointment.dateKey);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                const dayData = docSnap.data();
-                if (dayData.appointments) {
-                    takenHoursList = dayData.appointments.map(app => app.hour);
-                }
-            }
-        } catch (error) {
-            console.error("Erro ao buscar horários: ", error);
-        }
-
-        grid.innerHTML = '';
-        let availableCount = 0;
-
+            const docRef = doc(db, "agenda", window.appointment.dateKey); const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) { takenHoursList = (docSnap.data().appointments || []).map(app => app.hour); }
+        } catch (error) { console.error(error); }
+        grid.innerHTML = ''; let availableCount = 0;
         baseHours.forEach(hour => {
             if (!takenHoursList.includes(hour)) {
-                availableCount++;
-                const card = document.createElement('div');
-                card.className = 'time-card';
-                card.innerText = hour;
-                card.onclick = function() { finalizeAppointment(hour); };
-                grid.appendChild(card);
+                availableCount++; const card = document.createElement('div'); card.className = 'time-card'; card.innerText = hour;
+                card.onclick = function() { finalizeAppointment(hour); }; grid.appendChild(card);
             }
         });
-
-        if (availableCount === 0) {
-            grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
-        }
+        if (availableCount === 0) grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
     }
 
     async function finalizeAppointment(selectedTime) {
         window.appointment.time = selectedTime;
-
         try {
-            const docRef = doc(db, "agenda", window.appointment.dateKey);
-            const docSnap = await getDoc(docRef);
-            let currentAppointments = [];
-
-            if (docSnap.exists()) {
-                currentAppointments = docSnap.data().appointments || [];
-            }
-
-            // Validação anti-furo de última hora
-            const isAlreadyTaken = currentAppointments.some(app => app.hour === selectedTime);
-            if (isAlreadyTaken) {
-                alert("ESTE HORÁRIO ACABOU DE SER RESERVADO POR OUTRO CLIENTE! POR FAVOR, ESCOLHA OUTRO.");
-                renderHours();
-                return;
-            }
-
-            currentAppointments.push({
-                hour: selectedTime,
-                name: window.appointment.name,
-                service: window.appointment.service
-            });
-
+            const docRef = doc(db, "agenda", window.appointment.dateKey); const docSnap = await getDoc(docRef);
+            let currentAppointments = docSnap.exists() ? (docSnap.data().appointments || []) : [];
+            if (currentAppointments.some(app => app.hour === selectedTime)) { alert("HORÁRIO JÁ RESERVADO!"); renderHours(); return; }
+            currentAppointments.push({ hour: selectedTime, name: window.appointment.name, service: window.appointment.service });
             await setDoc(docRef, { appointments: currentAppointments }, { merge: true });
-
-            // Registro global para facilitar a leitura da agenda do barbeiro
-            const globalIndexRef = doc(db, "config", "active_dates");
-            const indexSnap = await getDoc(globalIndexRef);
-            let activeDatesList = [];
-            if (indexSnap.exists()) {
-                activeDatesList = indexSnap.data().list || [];
-            }
-            if (!activeDatesList.includes(window.appointment.dateKey)) {
-                activeDatesList.push(window.appointment.dateKey);
-                await setDoc(globalIndexRef, { list: activeDatesList });
-            }
-
-        } catch (error) {
-            console.error("Erro ao salvar agendamento: ", error);
-            alert("ERRO DE CONEXÃO AO SALVAR. TENTE NOVAMENTE.");
-            return;
-        }
-
+            const globalIndexRef = doc(db, "config", "active_dates"); const indexSnap = await getDoc(globalIndexRef);
+            let activeDatesList = indexSnap.exists() ? (indexSnap.data().list || []) : [];
+            if (!activeDatesList.includes(window.appointment.dateKey)) { activeDatesList.push(window.appointment.dateKey); await setDoc(globalIndexRef, { list: activeDatesList }); }
+        } catch (error) { alert("ERRO AO SALVAR."); return; }
         const phoneNumber = "5521969140228";
-        const message = `Olá, Don Bigode! Gostaria de realizar um agendamento:\n\n` +
-                        `👤 Nome: ${window.appointment.name}\n` +
-                        `✂️ Serviço: ${window.appointment.service} (${window.appointment.price})\n` +
-                        `📅 Data: ${window.appointment.dateText}\n` +
-                        `⏱ Horário: ${window.appointment.time}`;
-
-        const encryptedMessage = encodeURIComponent(message);
-        
-        document.getElementById('client-name').value = '';
-        window.goBack('services');
-
-        // --- CORREÇÃO COMPATIBILIDADE IPHONE (iOS) ---
-        // Redirecionamento na mesma aba para burlar a trava de segurança do Safari contra popups em blocos assíncronos.
-        window.location.href = `https://wa.me/${phoneNumber}?text=${encryptedMessage}`;
+        const message = `Olá, Don Bigode! Gostaria de realizar um agendamento:\n\n👤 Nome: ${window.appointment.name}\n✂️ Serviço: ${window.appointment.service} (${window.appointment.price})\n📅 Data: ${window.appointment.dateText}\n⏱ Horário: ${window.appointment.time}`;
+        document.getElementById('client-name').value = ''; window.goBack('services');
+        window.location.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     }
 
-    window.openAdminPanel = function() {
-        document.getElementById('step-services').classList.add('hidden');
-        document.getElementById('step-name').classList.add('hidden');
-        document.getElementById('step-date').classList.add('hidden');
-        document.getElementById('step-time').classList.add('hidden');
-        document.getElementById('step-admin').classList.remove('hidden');
+    // LOGICA DE LOGIN ADMIN
+    window.toggleLoginBox = function() {
+        const box = document.getElementById('admin-login-box');
+        box.classList.toggle('hidden');
+        if(!box.classList.contains('hidden')) {
+            document.getElementById('admin-password-input').focus();
+        }
+    }
 
+    window.checkAdminPassword = function() {
+        const passInput = document.getElementById('admin-password-input').value;
+        if(passInput === "admin") {
+            document.getElementById('admin-password-input').value = "";
+            document.getElementById('admin-login-box').classList.add('hidden');
+            openAdminPanel();
+        } else {
+            alert("SENHA INCORRETA!");
+            document.getElementById('admin-password-input').value = "";
+        }
+    }
+
+    // PAINEL ADMIN REAL
+    async function openAdminPanel() {
+        document.querySelectorAll('.step-container').forEach(s => s.classList.add('hidden'));
+        document.getElementById('step-services').classList.add('hidden');
+        document.getElementById('step-admin').classList.remove('hidden');
         renderAdminAgenda();
     }
 
     async function renderAdminAgenda() {
-        const container = document.getElementById('admin-agenda-container');
-        container.innerHTML = '<div class="loading-text">CARREGANDO AGENDA DA NUVEM...</div>';
-
+        const container = document.getElementById('admin-agenda-container'); container.innerHTML = '<div class="loading-text">CARREGANDO NUVEM...</div>';
         try {
-            const globalIndexRef = doc(db, "config", "active_dates");
-            const indexSnap = await getDoc(globalIndexRef);
-            
-            if (!indexSnap.exists()) {
-                container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">NENHUM AGENDAMENTO ATIVO NA AGENDA.</p>';
-                return;
-            }
-
-            let activeDatesList = indexSnap.data().list || [];
-            activeDatesList.sort();
-
-            container.innerHTML = '';
-            let totalAppointmentsCount = 0;
-
+            const indexSnap = await getDoc(doc(db, "config", "active_dates"));
+            if (!indexSnap.exists()) { container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">AGENDA VAZIA.</p>'; return; }
+            let activeDatesList = (indexSnap.data().list || []).sort();
+            container.innerHTML = ''; let hasApp = false;
             for (const dateKey of activeDatesList) {
-                const docRef = doc(db, "agenda", dateKey);
-                const docSnap = await getDoc(docRef);
-
+                const docSnap = await getDoc(doc(db, "agenda", dateKey));
                 if (docSnap.exists()) {
                     let appointments = docSnap.data().appointments || [];
                     if (appointments.length > 0) {
-                        totalAppointmentsCount += appointments.length;
+                        hasApp = true;
                         const [year, month, day] = dateKey.split('-');
-                        const cardBlock = document.createElement('div');
-                        cardBlock.className = 'admin-card';
-                        cardBlock.innerHTML = `<div style="color:var(--accent-gold); font-size:8px; text-transform:uppercase;">📅 DIA: ${day}/${month}/${year}</div>`;
-
+                        const card = document.createElement('div'); card.className = 'admin-card';
+                        card.innerHTML = `<div style="color:var(--accent-gold); font-size:8px;">📅 DIA: ${day}/${month}/${year}</div>`;
                         appointments.sort((a, b) => a.hour.localeCompare(b.hour)).forEach((app, index) => {
-                            const row = document.createElement('div');
-                            row.className = 'admin-row';
-                            
-                            const btnCancel = document.createElement('button');
-                            btnCancel.className = 'admin-btn-cancel';
-                            btnCancel.innerText = 'LIBERAR';
-                            btnCancel.onclick = function() { cancelSlot(dateKey, index); };
-
-                            row.innerHTML = `
-                                <div class="admin-info">
-                                    <span style="color:#fff; font-weight:bold;">⏱ ${app.hour}</span>
-                                    <span>👤 ${app.name}</span>
-                                    <span style="color:var(--text-gray); font-size:6px;">✂️ ${app.service}</span>
-                                </div>
-                            `;
-                            row.appendChild(btnCancel);
-                            cardBlock.appendChild(row);
+                            const row = document.createElement('div'); row.className = 'admin-row';
+                            const btn = document.createElement('button'); btn.className = 'admin-btn-cancel'; btn.innerText = 'LIBERAR';
+                            btn.onclick = function() { cancelSlot(dateKey, index); };
+                            row.innerHTML = `<div class="admin-info"><span style="color:#fff;">⏱ ${app.hour}</span><span>👤 ${app.name}</span><span style="font-size:6px;">✂️ ${app.service}</span></div>`;
+                            row.appendChild(btn); card.appendChild(row);
                         });
-
-                        container.appendChild(cardBlock);
+                        container.appendChild(card);
                     }
                 }
             }
-
-            if (totalAppointmentsCount === 0) {
-                container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">NENHUM AGENDAMENTO ATIVO NA AGENDA.</p>';
-            }
-
-        } catch (error) {
-            console.error("Erro ao renderizar painel: ", error);
-            container.innerHTML = '<p style="text-align:center; color:var(--danger-red); font-size:8px; padding: 30px 0;">ERRO AO BUSCAR DADOS.</p>';
-        }
+            if(!hasApp) container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">AGENDA VAZIA.</p>';
+        } catch (error) { container.innerHTML = '<p>ERRO AO BUSCAR DADOS.</p>'; }
     }
 
     async function cancelSlot(dateKey, index) {
-        if (!confirm("DESEJA REALMENTE LIBERAR ESSE HORÁRIO?")) return;
-
+        if (!confirm("LIBERAR HORÁRIO?")) return;
         try {
-            const docRef = doc(db, "agenda", dateKey);
-            const docSnap = await getDoc(docRef);
-
+            const docRef = doc(db, "agenda", dateKey); const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
-                let appointments = docSnap.data().appointments || [];
-                appointments.splice(index, 1);
-
-                await setDoc(docRef, { appointments: appointments }, { merge: true });
-                renderAdminAgenda();
+                let appointments = docSnap.data().appointments || []; appointments.splice(index, 1);
+                await setDoc(docRef, { appointments: appointments }, { merge: true }); renderAdminAgenda();
             }
-        } catch (error) {
-            console.error("Erro ao cancelar: ", error);
-            alert("ERRO AO REMOVER O AGENDAMENTO.");
-        }
+        } catch (error) { alert("ERRO AO LIBERAR."); }
     }
 
     window.goBack = function(toStep) {
+        document.querySelectorAll('.step-container').forEach(s => s.classList.add('hidden'));
         document.getElementById('step-services').classList.add('hidden');
-        document.getElementById('step-name').classList.add('hidden');
-        document.getElementById('step-date').classList.add('hidden');
-        document.getElementById('step-time').classList.add('hidden');
-        document.getElementById('step-admin').classList.add('hidden');
-
-        if(toStep === 'services') {
-            document.getElementById('step-services').classList.remove('hidden');
-        } else if(toStep === 'name') {
-            document.getElementById('step-name').classList.remove('hidden');
-        } else if(toStep === 'date') {
-            document.getElementById('step-date').classList.remove('hidden');
-        }
+        if(toStep === 'services') document.getElementById('step-services').classList.remove('hidden');
+        else document.getElementById(`step-${toStep}`).classList.remove('hidden');
     }
 </script>
 
