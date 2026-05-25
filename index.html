@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don Bigode Barbearia</title>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -561,7 +564,6 @@
     const REAL_TODAY = new Date(); REAL_TODAY.setHours(0, 0, 0, 0); 
     let currentNavDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
 
-    // FUNÇÕES DE NAVEGAÇÃO E AGENDAMENTO
     window.selectService = function(serviceName, servicePrice) {
         window.appointment.service = serviceName; window.appointment.price = servicePrice;
         document.getElementById('step-services').classList.add('hidden'); document.getElementById('step-name').classList.remove('hidden');
@@ -647,7 +649,6 @@
         window.location.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     }
 
-    // LOGICA DE LOGIN ADMIN
     window.toggleLoginBox = function() {
         const box = document.getElementById('admin-login-box');
         box.classList.toggle('hidden');
@@ -668,7 +669,6 @@
         }
     }
 
-    // PAINEL ADMIN REAL
     async function openAdminPanel() {
         document.querySelectorAll('.step-container').forEach(s => s.classList.add('hidden'));
         document.getElementById('step-services').classList.add('hidden');
