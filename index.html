@@ -336,7 +336,7 @@
         }
 
         .admin-info {
-            font-size: 13px;
+            font-size: 15px;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -350,7 +350,7 @@
 
         .admin-btn-cancel {
             font-family: 'Inter', sans-serif;
-            font-size: 11px;
+            font-size: 13px;
             font-weight: 600;
             background-color: #fee2e2;
             color: var(--danger-red);
@@ -547,7 +547,7 @@
 
     <div id="step-admin" class="step-container hidden">
         <div class="section-title" style="color: var(--accent-gold);">Painel Don Bigode</div>
-        <p style="text-align: center; font-size: 7px; color: var(--text-gray); margin: 0 0 10px 0;">Clique em LIBERAR para restaurar o horário</p>
+        <p style="text-align: center; font-size: 13px; color: var(--text-gray); margin: 0 0 10px 0;">Clique em LIBERAR para restaurar o horário</p>
         <div id="admin-agenda-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
         <button class="btn-pixel" style="margin-top: 15px;" onclick="goBack('services')">Sair do Painel</button>
     </div>
@@ -560,7 +560,7 @@
         <span class="admin-access-link" id="admin-trigger" onclick="toggleLoginBox()">ENTRAR COMO ADMINISTRADOR</span>
         
         <div id="admin-login-box" class="hidden">
-            <p style="color:#fff; font-size:7px; margin-bottom:10px;">ACESSO RESTRITO</p>
+            <p style="color:#fff; font-size:13px; margin-bottom:10px;">ACESSO RESTRITO</p>
             <input type="password" id="admin-password-input" class="input-pixel" placeholder="SENHA...">
             <button class="btn-pixel" style="margin-top:10px; width:100%;" onclick="checkAdminPassword()">ENTRAR</button>
         </div>
@@ -710,7 +710,7 @@
         const container = document.getElementById('admin-agenda-container'); container.innerHTML = '<div class="loading-text">CARREGANDO NUVEM...</div>';
         try {
             const indexSnap = await getDoc(doc(db, "config", "active_dates"));
-            if (!indexSnap.exists()) { container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">AGENDA VAZIA.</p>'; return; }
+            if (!indexSnap.exists()) { container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:13px; padding: 30px 0;">AGENDA VAZIA.</p>'; return; }
             let activeDatesList = (indexSnap.data().list || []).sort();
             container.innerHTML = ''; let hasApp = false;
             for (const dateKey of activeDatesList) {
@@ -721,19 +721,19 @@
                         hasApp = true;
                         const [year, month, day] = dateKey.split('-');
                         const card = document.createElement('div'); card.className = 'admin-card';
-                        card.innerHTML = `<div style="color:var(--accent-gold); font-size:8px;">📅 DIA: ${day}/${month}/${year}</div>`;
+                        card.innerHTML = `<div style="color:var(--accent-gold); font-size:14px;">📅 DIA: ${day}/${month}/${year}</div>`;
                         appointments.sort((a, b) => a.hour.localeCompare(b.hour)).forEach((app, index) => {
                             const row = document.createElement('div'); row.className = 'admin-row';
                             const btn = document.createElement('button'); btn.className = 'admin-btn-cancel'; btn.innerText = 'LIBERAR';
                             btn.onclick = function() { cancelSlot(dateKey, index); };
-                            row.innerHTML = `<div class="admin-info"><span style="color:#fff;">⏱ ${app.hour}</span><span>👤 ${app.name}</span><span style="font-size:6px;">✂️ ${app.service}</span></div>`;
+                            row.innerHTML = `<div class="admin-info"><span style="color:#fff;">⏱ ${app.hour}</span><span>👤 ${app.name}</span><span style="font-size:13px;">✂️ ${app.service}</span></div>`;
                             row.appendChild(btn); card.appendChild(row);
                         });
                         container.appendChild(card);
                     }
                 }
             }
-            if(!hasApp) container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:8px; padding: 30px 0;">AGENDA VAZIA.</p>';
+            if(!hasApp) container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:13px; padding: 30px 0;">AGENDA VAZIA.</p>';
         } catch (error) { container.innerHTML = '<p>ERRO AO BUSCAR DADOS.</p>'; }
     }
 
