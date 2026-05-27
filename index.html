@@ -9,48 +9,44 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-color: #0b0b0b;
-            --container-bg: #141414;
-            --card-bg: #1c1c1c;
-            --card-hover: #252525;
-            --text-white: #ffffff;
-            --text-gray: #8a8a8a;
-            --pixel-border: #3a3a3a;
-            --accent-gold: #ffcc00;
-            --danger-red: #ff3333;
+            /* Nova Paleta Clean (Clara) */
+            --bg-color: #f4f4f5; /* Fundo geral cinza bem claro */
+            --container-bg: #ffffff; /* Fundo do app branco */
+            --card-bg: #ffffff;
+            --card-hover: #f9fafb;
+            --text-main: #111827; /* Preto/Cinza bem escuro para leitura */
+            --text-gray: #6b7280; /* Cinza médio para textos secundários */
+            --border-color: #e5e7eb; /* Bordas sutis */
+            --accent-gold: #d97706; /* Dourado adaptado para fundo claro */
+            --danger-red: #ef4444;
+            --primary-btn: #111827; /* Botão principal escuro */
         }
 
         body {
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
-            background-image: 
-                linear-gradient(335deg, #101010 23px, transparent 23px),
-                linear-gradient(155deg, #151515 23px, transparent 23px),
-                linear-gradient(335deg, #101010 23px, transparent 23px),
-                linear-gradient(155deg, #151515 23px, transparent 23px);
-            background-size: 58px 58px;
-            background-position: 0px 2px, 4px 30px, 30px 32px, 34px 2px;
-            color: var(--text-white);
-            font-family: 'Press Start 2P', monospace;
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif; /* Fonte nova */
             display: flex;
             justify-content: center;
-            font-size: 10px;
+            font-size: 14px; /* Aumentamos a fonte base */
             line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
             width: 100%;
             max-width: 480px;
             background-color: var(--container-bg);
-            padding: 24px 16px;
+            padding: 30px 20px;
             box-sizing: border-box;
-            border: 4px solid #fff;
-            box-shadow: 0 0 0 4px var(--bg-color), 0 0 0 8px #222;
+            border-radius: 24px; /* Bordas arredondadas do app */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* Sombra suave */
             margin: 20px 10px;
         }
 
@@ -63,9 +59,8 @@
         .banner-img {
             width: 100%;
             height: auto;
-            border: 4px solid var(--pixel-border);
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+            border-radius: 16px; /* Arredondado */
+            object-fit: cover;
         }
 
         .header {
@@ -75,99 +70,100 @@
 
         .logo-img {
             width: 100%;
-            max-width: 280px;
+            max-width: 180px; /* Reduzido para ficar mais elegante */
             height: auto;
-            margin: 15px auto;
+            margin: 10px auto;
             display: block;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            border: 4px solid var(--pixel-border);
-            box-shadow: 4px 4px 0px #000;
+            border-radius: 50%; /* Logo redonda, se for o caso */
         }
 
         h1 {
-            font-size: 16px;
-            margin: 25px 0 8px 0;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            color: #fff;
-            text-shadow: 2px 2px 0px #333;
+            font-size: 22px;
+            font-weight: 700;
+            margin: 15px 0 5px 0;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
         }
 
         .subtitle {
-            font-size: 8px;
+            font-size: 13px;
             color: var(--text-gray);
             margin: 0;
-            text-transform: uppercase;
+            font-weight: 500;
         }
 
         .section-title {
-            font-size: 10px;
+            font-size: 16px;
+            font-weight: 600;
             text-align: center;
-            margin: 25px 0 15px 0;
-            color: #fff;
-            text-transform: uppercase;
-            border-bottom: 2px dashed var(--pixel-border);
-            padding-bottom: 8px;
+            margin: 30px 0 20px 0;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border-color); /* Linha sutil */
+            padding-bottom: 12px;
         }
 
         .services-list, .step-container {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .service-card, .time-card, .admin-card {
             background-color: var(--card-bg);
-            border: 4px solid var(--pixel-border);
-            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px; /* Arredondamento dos cards */
+            padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 8px;
             cursor: pointer;
-            position: relative;
-            box-shadow: 3px 3px 0px #000;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
-        .service-card:active, .time-card:active, .btn-pixel:active, .admin-btn-cancel:active {
-            transform: translate(2px, 2px);
-            box-shadow: 1px 1px 0px #000;
-            border-color: #fff;
+        .service-card:hover, .time-card:hover {
+            border-color: #d1d5db;
+            background-color: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .service-card:active, .time-card:active {
+            transform: translateY(0);
         }
 
         .service-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
         }
 
         .service-title {
-            font-size: 9px;
-            font-weight: bold;
-            color: #fff;
-            text-transform: uppercase;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
         }
 
         .service-price {
-            font-size: 9px;
-            color: #fff;
-            background-color: #000;
-            padding: 4px 6px;
-            border: 2px solid var(--pixel-border);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            background-color: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 20px; /* Preço em formato de "pílula" */
             white-space: nowrap;
         }
 
         .service-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 7px;
+            font-size: 12px;
             color: var(--text-gray);
-            text-transform: uppercase;
+            font-weight: 500;
         }
 
         .premium-badge {
             color: var(--accent-gold);
-            text-shadow: 1px 1px 0px #000;
         }
 
         .hidden {
@@ -175,72 +171,84 @@
         }
 
         .input-pixel {
-            background-color: #000;
-            border: 4px solid var(--pixel-border);
-            color: #fff;
-            font-family: 'Press Start 2P', monospace;
-            padding: 12px;
-            font-size: 10px;
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            padding: 16px;
+            font-size: 15px;
             width: 100%;
             box-sizing: border-box;
             outline: none;
             text-align: center;
+            border-radius: 12px;
+            transition: border-color 0.2s;
         }
 
         .input-pixel:focus {
-            border-color: #fff;
+            border-color: var(--primary-btn);
+            background-color: #fff;
         }
 
         .btn-pixel {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 9px;
-            background-color: #fff;
-            color: #000;
-            border: 4px solid var(--pixel-border);
-            padding: 12px;
-            text-transform: uppercase;
-            font-weight: bold;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            background-color: var(--primary-btn);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 16px;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 4px 4px 0px #000;
+            transition: opacity 0.2s;
+            width: 100%;
+        }
+
+        .btn-pixel:hover {
+            opacity: 0.9;
         }
 
         .calendar-wrapper {
             background-color: var(--card-bg);
-            border: 4px solid var(--pixel-border);
-            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 15px;
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .calendar-btn {
-            background: none;
+            background: #f3f4f6;
             border: none;
-            color: #fff;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 10px;
+            color: var(--text-main);
+            font-size: 14px;
+            font-weight: bold;
             cursor: pointer;
-            padding: 5px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: background 0.2s;
         }
 
-        .calendar-btn:active {
-            color: var(--accent-gold);
+        .calendar-btn:hover {
+            background: #e5e7eb;
         }
 
         .calendar-month-year {
-            font-size: 8px;
-            text-transform: uppercase;
+            font-size: 14px;
+            font-weight: 600;
         }
 
         .calendar-weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            font-size: 6px;
+            font-size: 11px;
+            font-weight: 600;
             color: var(--text-gray);
             margin-bottom: 10px;
         }
@@ -248,26 +256,29 @@
         .calendar-days {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            gap: 8px;
         }
 
         .calendar-day {
             text-align: center;
-            padding: 8px 2px;
-            font-size: 8px;
+            padding: 10px 2px;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            border: 2px solid transparent;
-            background-color: #101010;
+            border-radius: 8px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            transition: all 0.2s;
         }
 
         .calendar-day:hover:not(.past) {
-            border-color: #fff;
+            background-color: var(--primary-btn);
+            color: #fff;
         }
 
         .calendar-day.empty {
             background: none;
             cursor: default;
-            border: none;
         }
 
         .calendar-day.sunday {
@@ -275,8 +286,7 @@
         }
 
         .calendar-day.past {
-            color: #444444 !important;
-            background-color: #080808;
+            color: #d1d5db !important;
             cursor: not-allowed;
             text-decoration: line-through;
         }
@@ -284,110 +294,130 @@
         .time-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         .time-card {
             text-align: center;
-            align-items: center;
-            justify-content: center;
-            font-size: 9px;
-            padding: 12px 5px;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 16px 5px;
         }
 
         .btn-back {
             background: none;
             border: none;
             color: var(--text-gray);
-            font-family: 'Press Start 2P', monospace;
-            font-size: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
             cursor: pointer;
-            text-transform: uppercase;
             align-self: center;
-            margin-top: 10px;
+            margin-top: 15px;
+            transition: color 0.2s;
+        }
+        
+        .btn-back:hover {
+            color: var(--text-main);
         }
 
         .admin-card {
             cursor: default;
-            gap: 4px;
+            gap: 8px;
         }
 
         .admin-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 2px dashed var(--pixel-border);
-            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
             margin-top: 4px;
         }
 
         .admin-info {
-            font-size: 7px;
+            font-size: 13px;
             display: flex;
             flex-direction: column;
-            gap: 3px;
+            gap: 4px;
+            color: var(--text-gray);
+        }
+
+        .admin-info span:first-child {
+            color: var(--text-main);
+            font-weight: 600;
         }
 
         .admin-btn-cancel {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 6px;
-            background-color: var(--danger-red);
-            color: #fff;
-            border: 2px solid #fff;
-            padding: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            background-color: #fee2e2;
+            color: var(--danger-red);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
             cursor: pointer;
-            text-transform: uppercase;
-            box-shadow: 2px 2px 0px #000;
+            transition: background 0.2s;
+        }
+        
+        .admin-btn-cancel:hover {
+            background-color: #fecaca;
         }
 
         .footer {
             text-align: center;
-            font-size: 7px;
+            font-size: 12px;
             color: var(--text-gray);
-            border-top: 4px dashed var(--pixel-border);
-            padding-top: 25px;
-            margin-top: 35px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 30px;
+            margin-top: 40px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .btn-whatsapp {
-            color: #000;
-            background-color: #fff;
+            color: #fff;
+            background-color: #25D366; /* Cor oficial do WhatsApp */
             text-decoration: none;
             display: block;
-            margin: 15px auto 5px auto;
-            padding: 12px;
-            border: 4px solid var(--pixel-border);
-            box-shadow: 4px 4px 0px #000;
-            text-transform: uppercase;
-            width: 85%;
+            margin: 15px auto;
+            padding: 14px;
+            border-radius: 12px;
+            width: 100%;
             box-sizing: border-box;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
+            transition: opacity 0.2s;
+        }
+        
+        .btn-whatsapp:hover {
+            opacity: 0.9;
         }
 
         .admin-access-link {
-            font-size: 8px;
-            color: var(--accent-gold);
-            text-decoration: underline;
+            font-size: 12px;
+            color: var(--text-gray);
             cursor: pointer;
             margin-top: 20px;
             display: block;
+            font-weight: 500;
         }
         
         #admin-login-box {
-            background-color: #000;
-            border: 4px solid var(--pixel-border);
-            padding: 15px;
+            background-color: #f9fafb;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
             margin-top: 15px;
         }
 
         .loading-text {
             grid-column: span 2;
             text-align: center;
-            color: var(--accent-gold);
-            font-size: 8px;
+            color: var(--text-gray);
+            font-size: 13px;
             padding: 20px 0;
         }
     </style>
