@@ -24,6 +24,10 @@
         }
         body { margin:0;padding:0;background-color:var(--bg-color);color:var(--text-main);font-family:'Inter',sans-serif;display:flex;justify-content:center;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased; }
         .container { width:100%;max-width:480px;background-color:var(--container-bg);padding:30px 20px;box-sizing:border-box;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,0.08);margin:20px 10px; }
+        .scroll-cta { width:100%;padding:28px 16px;box-sizing:border-box;text-align:center;background:linear-gradient(135deg,#111827 0%,#1f2937 100%);border-radius:16px;margin-bottom:4px; }
+        .scroll-cta-text { font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1.3;margin:8px 0; }
+        .scroll-cta-arrow { font-size:20px;color:var(--accent-gold);animation:bounce 1.4s infinite; }
+        @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
         .banner-container { width:100%;margin-bottom:20px;text-align:center; }
         .banner-img { width:100%;height:auto;border-radius:16px;object-fit:cover; }
         .header { text-align:center;margin-bottom:30px; }
@@ -101,6 +105,7 @@
 
         /* RELATORIOS */
         .report-selector { display:flex;gap:8px;margin-bottom:16px;align-items:center; }
+        .report-nav { display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding:10px 14px;background:#f9fafb;border:1px solid var(--border-color);border-radius:12px; }
         .report-selector select { flex:1;padding:10px 14px;border:1px solid var(--border-color);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;background:#f9fafb;color:var(--text-main);outline:none; }
         .btn-load-report { padding:10px 16px;background:var(--accent-gold);color:#fff;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap; }
         .report-summary { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px; }
@@ -131,7 +136,11 @@
 <div class="container">
 
     <div class="banner-container">
-        <img src="banner.png" alt="Don Bigode Banner" class="banner-img">
+        <div class="scroll-cta">
+            <div class="scroll-cta-arrow">⬇</div>
+            <div class="scroll-cta-text">Role para baixo para fazer seu agendamento</div>
+            <div class="scroll-cta-arrow">⬇</div>
+        </div>
     </div>
     <div class="header">
         <img src="logo.png" alt="Don Bigode Logo" class="logo-img">
@@ -217,12 +226,17 @@
         <div class="section-title" style="color:var(--accent-gold);">Painel Don Bigode</div>
         <div class="admin-tabs">
             <button class="admin-tab active" onclick="switchAdminTab('agenda')">📅 Agenda do Dia</button>
+            <button class="admin-tab" onclick="switchAdminTab('futuros')">🗓 Futuros</button>
             <button class="admin-tab" onclick="switchAdminTab('horarios')">⏱ Horários</button>
             <button class="admin-tab" onclick="switchAdminTab('relatorios')">📊 Relatórios</button>
         </div>
         <div id="admin-tab-agenda" class="admin-tab-content active">
             <p style="font-size:13px;color:var(--text-gray);margin:0 0 14px 0;text-align:center;">Agendamentos de hoje — clique em LIBERAR para cancelar.</p>
             <div id="admin-agenda-container" style="display:flex;flex-direction:column;gap:12px;"></div>
+        </div>
+        <div id="admin-tab-futuros" class="admin-tab-content">
+            <p style="font-size:13px;color:var(--text-gray);margin:0 0 14px 0;text-align:center;">Agendamentos futuros — libere para cancelar e remover do faturamento.</p>
+            <div id="admin-futuros-container" style="display:flex;flex-direction:column;gap:12px;"></div>
         </div>
         <div id="admin-tab-horarios" class="admin-tab-content">
             <p style="font-size:13px;color:var(--text-gray);margin:0 0 12px 0;text-align:center;">Ative ou desative horários para um dia específico.</p>
@@ -243,9 +257,10 @@
             </div>
         </div>
         <div id="admin-tab-relatorios" class="admin-tab-content">
-            <div class="report-selector">
-                <select id="report-month-select"></select>
-                <button class="btn-load-report" onclick="loadReport()">Ver</button>
+            <div class="report-nav">
+                <button class="calendar-btn" onclick="reportChangeMonth(-1)">[ &lt; ]</button>
+                <span id="report-month-label" style="font-size:14px;font-weight:600;"></span>
+                <button class="calendar-btn" onclick="reportChangeMonth(1)">[ &gt; ]</button>
             </div>
             <div id="report-container"></div>
         </div>
@@ -262,7 +277,7 @@
             <input type="password" id="admin-password-input" class="input-pixel" placeholder="SENHA...">
             <button class="btn-pixel" style="margin-top:10px;width:100%;" onclick="checkAdminPassword()">ENTRAR</button>
         </div>
-        <p style="font-size:11px;color:#aaa;margin-top:25px;">PRESS START TO INSERT COIN</p>
+        
     </div>
 </div>
 
@@ -460,17 +475,18 @@
         document.querySelectorAll('.step-container').forEach(s => s.classList.add('hidden'));
         document.getElementById('step-services').classList.add('hidden');
         document.getElementById('step-admin').classList.remove('hidden');
-        populateReportMonthSelect();
+        initReportNav();
         switchAdminTab('agenda');
     }
 
     window.switchAdminTab = function(tab) {
         document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
-        const tabs = ['agenda','horarios','relatorios'];
+        const tabs = ['agenda','futuros','horarios','relatorios'];
         document.querySelectorAll('.admin-tab')[tabs.indexOf(tab)].classList.add('active');
         document.getElementById('admin-tab-' + tab).classList.add('active');
         if (tab === 'agenda') renderAdminAgenda();
+        if (tab === 'futuros') renderFutureAgenda();
         if (tab === 'horarios') initHoursManager();
         if (tab === 'relatorios') loadReport();
     }
@@ -514,6 +530,57 @@
                 const removedPrice = (removed && removed.price) ? removed.price : price;
                 if (removedPrice > 0) await updateMonthlyRevenue(dateKey, removedPrice, 'remove');
                 renderAdminAgenda();
+            }
+        } catch(e) { alert("ERRO AO LIBERAR."); }
+    }
+
+    // AGENDAMENTOS FUTUROS
+    async function renderFutureAgenda() {
+        const container = document.getElementById('admin-futuros-container');
+        container.innerHTML = '<div class="empty-state">Carregando...</div>';
+        try {
+            const indexSnap = await getDoc(doc(db, "config", "active_dates"));
+            if (!indexSnap.exists()) { container.innerHTML = '<div class="empty-state">Nenhum agendamento futuro.</div>'; return; }
+            const today = todayKey();
+            const futureDates = (indexSnap.data().list || []).filter(d => d > today).sort();
+            if (futureDates.length === 0) { container.innerHTML = '<div class="empty-state">Nenhum agendamento futuro.</div>'; return; }
+            container.innerHTML = '';
+            let found = false;
+            for (const dateKey of futureDates) {
+                const snap = await getDoc(doc(db, "agenda", dateKey));
+                if (!snap.exists()) continue;
+                const apps = (snap.data().appointments || []).sort((a,b) => a.hour.localeCompare(b.hour));
+                if (apps.length === 0) continue;
+                found = true;
+                const dp = dateKey.split('-');
+                const displayDate = dp[2] + '/' + dp[1] + '/' + dp[0];
+                const card = document.createElement('div'); card.className = 'admin-card';
+                card.innerHTML = '<div class="admin-date-header"><span>' + displayDate + '</span><span style="font-size:12px;color:var(--text-gray);">' + apps.length + ' agend.</span></div>';
+                apps.forEach((app, index) => {
+                    const row = document.createElement('div'); row.className = 'admin-row';
+                    const btn = document.createElement('button'); btn.className = 'admin-btn-cancel'; btn.innerText = 'LIBERAR';
+                    btn.onclick = function() { cancelFutureSlot(dateKey, index, app.price || 0); };
+                    row.innerHTML = '<div class="admin-info"><span>' + app.hour + '</span><span>' + app.name + '</span><span>' + app.service + '</span></div>';
+                    row.appendChild(btn); card.appendChild(row);
+                });
+                container.appendChild(card);
+            }
+            if (!found) container.innerHTML = '<div class="empty-state">Nenhum agendamento futuro.</div>';
+        } catch(e) { container.innerHTML = '<div class="empty-state">Erro ao carregar agendamentos futuros.</div>'; console.error(e); }
+    }
+
+    async function cancelFutureSlot(dateKey, index, price) {
+        if (!confirm("LIBERAR HORÁRIO FUTURO? O agendamento será removido e o valor descontado do faturamento.")) return;
+        try {
+            const docRef = doc(db, "agenda", dateKey);
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+                let apps = snap.data().appointments || [];
+                const removed = apps.splice(index, 1)[0];
+                await setDoc(docRef, { appointments: apps }, { merge: true });
+                const removedPrice = (removed && removed.price) ? removed.price : price;
+                if (removedPrice > 0) await updateMonthlyRevenue(dateKey, removedPrice, 'remove');
+                renderFutureAgenda();
             }
         } catch(e) { alert("ERRO AO LIBERAR."); }
     }
@@ -604,51 +671,38 @@
         }
     }
 
-    // RELATORIOS
-    async function populateReportMonthSelect() {
-        const sel = document.getElementById('report-month-select');
-        // Sempre recarregar para pegar novos meses
-        sel.innerHTML = '';
-        const now = new Date();
-        const currentKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+    // RELATORIOS — navegação infinita por mês
+    let reportNavDate = new Date();
 
-        // Buscar meses que têm dados no Firebase
-        let knownMonths = new Set();
-        knownMonths.add(currentKey); // Mês atual sempre aparece
-        try {
-            const indexSnap = await getDoc(doc(db, "config", "active_dates"));
-            if (indexSnap.exists()) {
-                (indexSnap.data().list || []).forEach(dateKey => {
-                    const parts = dateKey.split('-');
-                    knownMonths.add(parts[0] + '-' + parts[1]);
-                });
-            }
-            // Também verificar coleção faturamento
-            // (não tem listAll no SDK lite, mas os meses das datas já cobrem)
-        } catch(e) {}
+    function initReportNav() {
+        reportNavDate = new Date();
+        updateReportLabel();
+    }
 
-        // Ordenar do mais recente ao mais antigo
-        const sorted = Array.from(knownMonths).sort((a,b) => b.localeCompare(a));
-        sorted.forEach(value => {
-            const parts = value.split('-');
-            const label = monthNames[parseInt(parts[1])-1] + ' ' + parts[0];
-            const opt = document.createElement('option'); opt.value = value; opt.textContent = label;
-            sel.appendChild(opt);
-        });
+    function updateReportLabel() {
+        const label = document.getElementById('report-month-label');
+        if (label) label.textContent = monthNames[reportNavDate.getMonth()] + ' ' + reportNavDate.getFullYear();
+    }
+
+    window.reportChangeMonth = function(direction) {
+        reportNavDate = new Date(reportNavDate.getFullYear(), reportNavDate.getMonth() + direction, 1);
+        updateReportLabel();
+        loadReport();
     }
 
     window.loadReport = async function() {
-        const sel = document.getElementById('report-month-select');
-        if (!sel || !sel.value) return;
-        const parts = sel.value.split('-');
-        const year = parts[0]; const month = parts[1];
+        updateReportLabel();
+        const year = String(reportNavDate.getFullYear());
+        const month = String(reportNavDate.getMonth() + 1).padStart(2, '0');
+        const monthKey = year + '-' + month;
         const container = document.getElementById('report-container');
         container.innerHTML = '<div class="empty-state">Carregando relatório...</div>';
         try {
-            const revSnap = await getDoc(doc(db, "faturamento", sel.value));
+            const revSnap = await getDoc(doc(db, "faturamento", monthKey));
             const revData = revSnap.exists() ? revSnap.data() : { total: 0, count: 0 };
             const total = revData.total || 0;
             const count = revData.count || 0;
+
             const indexSnap = await getDoc(doc(db, "config", "active_dates"));
             let allApps = [];
             if (indexSnap.exists()) {
@@ -664,6 +718,12 @@
                     }
                 }
             }
+
+            if (total === 0 && count === 0 && allApps.length === 0) {
+                container.innerHTML = '<div class="empty-state">Nenhum agendamento em ' + monthNames[reportNavDate.getMonth()] + ' ' + year + '.</div>';
+                return;
+            }
+
             allApps.sort((a,b) => a.dateKey.localeCompare(b.dateKey) || a.hour.localeCompare(b.hour));
             const avgTicket = count > 0 ? (total / count) : 0;
             const serviceCount = {};
