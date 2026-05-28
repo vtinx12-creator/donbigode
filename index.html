@@ -94,6 +94,10 @@
         .btn-load-hours { padding:10px 16px;background:var(--primary-btn);color:#fff;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap; }
         .hours-save-bar { margin-top:16px; }
         .hours-status { font-size:12px;text-align:center;margin-top:8px;min-height:18px; }
+        .add-hour-row { display:flex;gap:8px;align-items:center;padding:12px 16px;border:1px dashed var(--border-color);border-radius:12px;background:#fff;margin-top:4px; }
+        .add-hour-row input[type="time"] { flex:1;padding:8px 12px;border:1px solid var(--border-color);border-radius:8px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;background:#f9fafb;color:var(--text-main);outline:none; }
+        .btn-add-hour { padding:8px 14px;background:var(--success-green);color:#fff;border:none;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap; }
+        .hour-toggle-row.custom { background:#f0fdf4;border-color:#bbf7d0; }
 
         /* RELATORIOS */
         .report-selector { display:flex;gap:8px;margin-bottom:16px;align-items:center; }
@@ -227,6 +231,12 @@
                 <button class="btn-load-hours" onclick="loadHoursForDate()">Carregar</button>
             </div>
             <div id="hours-manager-container" class="hours-manager"></div>
+            <div id="hours-add-row" class="add-hour-row" style="display:none;">
+                <input type="time" id="hour-start-input" step="3600">
+                <span style="font-size:13px;color:var(--text-gray);font-weight:600;">→</span>
+                <input type="time" id="hour-end-input" step="3600">
+                <button class="btn-add-hour" onclick="addCustomHour()">+ Adicionar</button>
+            </div>
             <div class="hours-save-bar" id="hours-save-bar" style="display:none;">
                 <button class="btn-pixel btn-green" onclick="saveHoursForDate()">💾 Salvar Horários</button>
                 <div class="hours-status" id="hours-status"></div>
@@ -516,6 +526,7 @@
             input.value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
         }
         document.getElementById('hours-manager-container').innerHTML = '<div class="empty-state">Selecione uma data e clique em Carregar.</div>';
+        document.getElementById('hours-add-row').style.display = 'none';
         document.getElementById('hours-save-bar').style.display = 'none';
     }
 
@@ -544,8 +555,31 @@
                 '<label class="toggle-switch"><input type="checkbox" data-hour="' + hour + '"' + (isEnabled ? ' checked' : '') + (isTaken ? ' disabled' : '') + '><span class="toggle-slider"></span></label>';
             container.appendChild(row);
         });
+        document.getElementById('hours-add-row').style.display = 'flex';
         document.getElementById('hours-save-bar').style.display = 'block';
         document.getElementById('hours-status').textContent = '';
+    }
+
+    window.addCustomHour = function() {
+        const startVal = document.getElementById('hour-start-input').value;
+        const endVal = document.getElementById('hour-end-input').value;
+        if (!startVal || !endVal) { alert('Preencha o horário de início e fim.'); return; }
+        const [sh, sm] = startVal.split(':').map(Number);
+        const [eh, em] = endVal.split(':').map(Number);
+        if (eh * 60 + em <= sh * 60 + sm) { alert('O horário de fim deve ser depois do início.'); return; }
+        const hourLabel = startVal + ' - ' + endVal;
+        // Verificar se já existe
+        const existing = document.querySelectorAll('#hours-manager-container input[type="checkbox"]');
+        for (const c of existing) { if (c.dataset.hour === hourLabel) { alert('Este horário já está na lista.'); return; } }
+        const container = document.getElementById('hours-manager-container');
+        const row = document.createElement('div'); row.className = 'hour-toggle-row custom';
+        row.innerHTML = '<span class="hour-toggle-label">' + hourLabel + ' <span style="font-size:11px;color:var(--success-green);font-weight:400;">novo</span></span>' +
+            '<label class="toggle-switch"><input type="checkbox" data-hour="' + hourLabel + '" checked><span class="toggle-slider"></span></label>';
+        container.appendChild(row);
+        document.getElementById('hour-start-input').value = '';
+        document.getElementById('hour-end-input').value = '';
+        document.getElementById('hours-status').textContent = 'Horário adicionado. Clique em Salvar para confirmar.';
+        document.getElementById('hours-status').style.color = 'var(--accent-gold)';
     }
 
     window.saveHoursForDate = async function() {
@@ -571,17 +605,36 @@
     }
 
     // RELATORIOS
-    function populateReportMonthSelect() {
+    async function populateReportMonthSelect() {
         const sel = document.getElementById('report-month-select');
-        if (sel.options.length > 0) return;
+        // Sempre recarregar para pegar novos meses
+        sel.innerHTML = '';
         const now = new Date();
-        for (let i = 0; i < 12; i++) {
-            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-            const value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
-            const label = monthNames[d.getMonth()] + ' ' + d.getFullYear();
+        const currentKey = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+
+        // Buscar meses que têm dados no Firebase
+        let knownMonths = new Set();
+        knownMonths.add(currentKey); // Mês atual sempre aparece
+        try {
+            const indexSnap = await getDoc(doc(db, "config", "active_dates"));
+            if (indexSnap.exists()) {
+                (indexSnap.data().list || []).forEach(dateKey => {
+                    const parts = dateKey.split('-');
+                    knownMonths.add(parts[0] + '-' + parts[1]);
+                });
+            }
+            // Também verificar coleção faturamento
+            // (não tem listAll no SDK lite, mas os meses das datas já cobrem)
+        } catch(e) {}
+
+        // Ordenar do mais recente ao mais antigo
+        const sorted = Array.from(knownMonths).sort((a,b) => b.localeCompare(a));
+        sorted.forEach(value => {
+            const parts = value.split('-');
+            const label = monthNames[parseInt(parts[1])-1] + ' ' + parts[0];
             const opt = document.createElement('option'); opt.value = value; opt.textContent = label;
             sel.appendChild(opt);
-        }
+        });
     }
 
     window.loadReport = async function() {
