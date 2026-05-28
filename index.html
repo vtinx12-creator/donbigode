@@ -28,7 +28,12 @@
         .scroll-cta-welcome { font-size:13px;font-weight:500;color:#9ca3af;letter-spacing:0.3px;margin-bottom:6px; }
         .scroll-cta-brand { font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1.2; }
         .scroll-cta-text { font-size:15px;font-weight:600;color:#d1d5db;letter-spacing:-0.2px;margin:0 0 12px 0; }
-        .scroll-cta-arrow { font-size:18px;color:var(--accent-gold);animation:bounce 1.4s infinite; }
+        .scroll-cta-arrows { display:flex;justify-content:center;gap:10px;margin-top:10px; }
+        .scroll-cta-arrows span { font-size:18px;color:var(--accent-gold);animation:bounce 1.4s infinite; }
+        .scroll-cta-arrows span:nth-child(2) { animation-delay:0.15s; }
+        .scroll-cta-arrows span:nth-child(3) { animation-delay:0.3s; }
+        .scroll-cta-arrows span:nth-child(4) { animation-delay:0.45s; }
+        .scroll-cta-arrows span:nth-child(5) { animation-delay:0.6s; }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
         .banner-container { width:100%;margin-bottom:20px;text-align:center; }
         .banner-img { width:100%;height:auto;border-radius:16px;object-fit:cover; }
@@ -142,7 +147,9 @@
             <div class="scroll-cta-welcome">✂️ Bem-vindo ao agendamento online da</div>
             <div class="scroll-cta-brand">Don Bigode Barbearia</div>
             <div class="scroll-cta-text">Role para baixo para fazer seu agendamento</div>
-            <div class="scroll-cta-arrow">⬇</div>
+            <div class="scroll-cta-arrows">
+                <span>⬇</span><span>⬇</span><span>⬇</span><span>⬇</span><span>⬇</span>
+            </div>
         </div>
     </div>
     <div class="header">
@@ -185,7 +192,7 @@
             <div class="service-card" onclick="selectService('⭐ Combo Premium', 'R$ 80,00', 80)">
                 <div class="service-header"><span class="service-title premium-badge">⭐ Combo Premium</span><span class="service-price">R$ 80,00</span></div>
                 <div class="service-meta"><span>Cabelo, Barba, Sobrancelha + Pigmentação</span></div>
-                <div class="service-meta"><span>Duração: 1h 20m</span><span style="color:#ffcc00;">[ VISUAL UP ]</span></div>
+                <div class="service-meta"><span>Duração: 1h 20m</span><span style="color:#ffcc00;">[ RETRÔ UP ]</span></div>
             </div>
             <div class="service-card" onclick="selectService('🔥 Premium Ultimate', 'R$ 100,00', 100)">
                 <div class="service-header"><span class="service-title premium-badge">🔥 Premium Ultimate</span><span class="service-price">R$ 100,00</span></div>
