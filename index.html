@@ -4,432 +4,131 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Don Bigode Barbearia</title>
-    
     <link rel="icon" type="image/png" href="logo.png">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
         :root {
-            /* Nova Paleta Clean (Clara) */
-            --bg-color: #f4f4f5; /* Fundo geral cinza bem claro */
-            --container-bg: #ffffff; /* Fundo do app branco */
+            --bg-color: #f4f4f5;
+            --container-bg: #ffffff;
             --card-bg: #ffffff;
             --card-hover: #f9fafb;
-            --text-main: #111827; /* Preto/Cinza bem escuro para leitura */
-            --text-gray: #6b7280; /* Cinza médio para textos secundários */
-            --border-color: #e5e7eb; /* Bordas sutis */
-            --accent-gold: #d97706; /* Dourado adaptado para fundo claro */
+            --text-main: #111827;
+            --text-gray: #6b7280;
+            --border-color: #e5e7eb;
+            --accent-gold: #d97706;
             --danger-red: #ef4444;
-            --primary-btn: #111827; /* Botão principal escuro */
+            --primary-btn: #111827;
+            --success-green: #16a34a;
         }
+        body { margin:0;padding:0;background-color:var(--bg-color);color:var(--text-main);font-family:'Inter',sans-serif;display:flex;justify-content:center;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased; }
+        .container { width:100%;max-width:480px;background-color:var(--container-bg);padding:30px 20px;box-sizing:border-box;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,0.08);margin:20px 10px; }
+        .banner-container { width:100%;margin-bottom:20px;text-align:center; }
+        .banner-img { width:100%;height:auto;border-radius:16px;object-fit:cover; }
+        .header { text-align:center;margin-bottom:30px; }
+        .logo-img { width:100%;max-width:180px;height:auto;margin:10px auto;display:block;border-radius:50%; }
+        h1 { font-size:22px;font-weight:700;margin:15px 0 5px 0;color:var(--text-main);letter-spacing:-0.5px; }
+        .subtitle { font-size:13px;color:var(--text-gray);margin:0;font-weight:500; }
+        .section-title { font-size:16px;font-weight:600;text-align:center;margin:30px 0 20px 0;color:var(--text-main);border-bottom:1px solid var(--border-color);padding-bottom:12px; }
+        .services-list,.step-container { display:flex;flex-direction:column;gap:12px; }
+        .service-card,.time-card,.admin-card { background-color:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 2px 4px rgba(0,0,0,0.02); }
+        .service-card:hover,.time-card:hover { border-color:#d1d5db;background-color:var(--card-hover);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+        .service-card:active,.time-card:active { transform:translateY(0); }
+        .service-header { display:flex;justify-content:space-between;align-items:center; }
+        .service-title { font-size:15px;font-weight:600;color:var(--text-main); }
+        .service-price { font-size:14px;font-weight:700;color:var(--text-main);background-color:#f3f4f6;padding:6px 12px;border-radius:20px;white-space:nowrap; }
+        .service-meta { display:flex;justify-content:space-between;font-size:12px;color:var(--text-gray);font-weight:500; }
+        .premium-badge { color:var(--accent-gold); }
+        .hidden { display:none !important; }
+        .input-pixel { background-color:#f9fafb;border:1px solid var(--border-color);color:var(--text-main);font-family:'Inter',sans-serif;padding:16px;font-size:15px;width:100%;box-sizing:border-box;outline:none;text-align:center;border-radius:12px;transition:border-color 0.2s; }
+        .input-pixel:focus { border-color:var(--primary-btn);background-color:#fff; }
+        .btn-pixel { font-family:'Inter',sans-serif;font-size:15px;background-color:var(--primary-btn);color:#fff;border:none;border-radius:12px;padding:16px;font-weight:600;cursor:pointer;transition:opacity 0.2s;width:100%; }
+        .btn-pixel:hover { opacity:0.9; }
+        .btn-pixel.btn-green { background-color:var(--success-green); }
+        .calendar-wrapper { background-color:var(--card-bg);border:1px solid var(--border-color);border-radius:16px;padding:15px; }
+        .calendar-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:20px; }
+        .calendar-btn { background:#f3f4f6;border:none;color:var(--text-main);font-size:14px;font-weight:bold;cursor:pointer;padding:8px 12px;border-radius:8px;transition:background 0.2s; }
+        .calendar-btn:hover { background:#e5e7eb; }
+        .calendar-month-year { font-size:14px;font-weight:600; }
+        .calendar-weekdays { display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:600;color:var(--text-gray);margin-bottom:10px; }
+        .calendar-days { display:grid;grid-template-columns:repeat(7,1fr);gap:8px; }
+        .calendar-day { text-align:center;padding:10px 2px;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;background-color:#fff;border:1px solid transparent;transition:all 0.2s; }
+        .calendar-day:hover:not(.past):not(.empty) { background-color:var(--primary-btn);color:#fff; }
+        .calendar-day.empty { background:none;cursor:default; }
+        .calendar-day.sunday { color:var(--danger-red); }
+        .calendar-day.past { color:#d1d5db !important;cursor:not-allowed;text-decoration:line-through; }
+        .time-grid { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+        .time-card { text-align:center;font-size:14px;font-weight:600;padding:16px 5px; }
+        .btn-back { background:none;border:none;color:var(--text-gray);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;align-self:center;margin-top:15px;transition:color 0.2s; }
+        .btn-back:hover { color:var(--text-main); }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif; /* Fonte nova */
-            display: flex;
-            justify-content: center;
-            font-size: 14px; /* Aumentamos a fonte base */
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-        }
+        /* ADMIN TABS */
+        .admin-tabs { display:flex;gap:8px;margin-bottom:20px; }
+        .admin-tab { flex:1;padding:10px 6px;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;border:1px solid var(--border-color);border-radius:10px;background:#f9fafb;color:var(--text-gray);cursor:pointer;transition:all 0.2s;text-align:center; }
+        .admin-tab.active { background:var(--primary-btn);color:#fff;border-color:var(--primary-btn); }
+        .admin-tab-content { display:none; }
+        .admin-tab-content.active { display:block; }
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background-color: var(--container-bg);
-            padding: 30px 20px;
-            box-sizing: border-box;
-            border-radius: 24px; /* Bordas arredondadas do app */
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* Sombra suave */
-            margin: 20px 10px;
-        }
+        /* ADMIN AGENDA */
+        .admin-card { cursor:default;gap:8px; }
+        .admin-date-header { color:var(--accent-gold);font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center; }
+        .admin-row { display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border-color);padding-top:12px;margin-top:4px; }
+        .admin-info { font-size:13px;display:flex;flex-direction:column;gap:4px;color:var(--text-gray); }
+        .admin-info span:first-child { color:var(--text-main);font-weight:600; }
+        .admin-btn-cancel { font-family:'Inter',sans-serif;font-size:13px;font-weight:600;background-color:#fee2e2;color:var(--danger-red);border:none;border-radius:8px;padding:8px 12px;cursor:pointer;transition:background 0.2s;white-space:nowrap; }
+        .admin-btn-cancel:hover { background-color:#fecaca; }
 
-        .banner-container {
-            width: 100%;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+        /* GERENCIAR HORARIOS */
+        .hours-manager { display:flex;flex-direction:column;gap:10px; }
+        .hour-toggle-row { display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border:1px solid var(--border-color);border-radius:12px;background:#f9fafb; }
+        .hour-toggle-label { font-size:14px;font-weight:600; }
+        .toggle-switch { position:relative;width:44px;height:24px;flex-shrink:0; }
+        .toggle-switch input { opacity:0;width:0;height:0; }
+        .toggle-slider { position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#d1d5db;border-radius:24px;transition:0.3s; }
+        .toggle-slider:before { position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background-color:white;border-radius:50%;transition:0.3s; }
+        input:checked + .toggle-slider { background-color:var(--success-green); }
+        input:checked + .toggle-slider:before { transform:translateX(20px); }
+        .hours-date-selector { display:flex;gap:8px;align-items:center;margin-bottom:10px; }
+        .hours-date-selector input[type="date"] { flex:1;padding:10px 14px;border:1px solid var(--border-color);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;background:#f9fafb;color:var(--text-main);outline:none; }
+        .btn-load-hours { padding:10px 16px;background:var(--primary-btn);color:#fff;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap; }
+        .hours-save-bar { margin-top:16px; }
+        .hours-status { font-size:12px;text-align:center;margin-top:8px;min-height:18px; }
 
-        .banner-img {
-            width: 100%;
-            height: auto;
-            border-radius: 16px; /* Arredondado */
-            object-fit: cover;
-        }
+        /* RELATORIOS */
+        .report-selector { display:flex;gap:8px;margin-bottom:16px;align-items:center; }
+        .report-selector select { flex:1;padding:10px 14px;border:1px solid var(--border-color);border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;background:#f9fafb;color:var(--text-main);outline:none; }
+        .btn-load-report { padding:10px 16px;background:var(--accent-gold);color:#fff;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap; }
+        .report-summary { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px; }
+        .report-stat { background:#f9fafb;border:1px solid var(--border-color);border-radius:12px;padding:14px;text-align:center; }
+        .report-stat-value { font-size:20px;font-weight:700;color:var(--text-main); }
+        .report-stat-label { font-size:11px;color:var(--text-gray);margin-top:4px; }
+        .report-stat.highlight { background:#fefce8;border-color:#fde68a; }
+        .report-stat.highlight .report-stat-value { color:var(--accent-gold); }
+        .report-list { display:flex;flex-direction:column;gap:8px; }
+        .report-item { display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border:1px solid var(--border-color);border-radius:10px;background:#fff; }
+        .report-item-info { display:flex;flex-direction:column;gap:2px; }
+        .report-item-name { font-size:13px;font-weight:600; }
+        .report-item-meta { font-size:12px;color:var(--text-gray); }
+        .report-item-price { font-size:14px;font-weight:700;color:var(--success-green);white-space:nowrap; }
+        .report-section-title { font-size:13px;font-weight:600;color:var(--text-gray);margin:12px 0 6px 0;text-transform:uppercase;letter-spacing:0.5px; }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .logo-img {
-            width: 100%;
-            max-width: 180px; /* Reduzido para ficar mais elegante */
-            height: auto;
-            margin: 10px auto;
-            display: block;
-            border-radius: 50%; /* Logo redonda, se for o caso */
-        }
-
-        h1 {
-            font-size: 22px;
-            font-weight: 700;
-            margin: 15px 0 5px 0;
-            color: var(--text-main);
-            letter-spacing: -0.5px;
-        }
-
-        .subtitle {
-            font-size: 13px;
-            color: var(--text-gray);
-            margin: 0;
-            font-weight: 500;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            text-align: center;
-            margin: 30px 0 20px 0;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-color); /* Linha sutil */
-            padding-bottom: 12px;
-        }
-
-        .services-list, .step-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .service-card, .time-card, .admin-card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px; /* Arredondamento dos cards */
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-
-        .service-card:hover, .time-card:hover {
-            border-color: #d1d5db;
-            background-color: var(--card-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        }
-
-        .service-card:active, .time-card:active {
-            transform: translateY(0);
-        }
-
-        .service-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .service-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        .service-price {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-main);
-            background-color: #f3f4f6;
-            padding: 6px 12px;
-            border-radius: 20px; /* Preço em formato de "pílula" */
-            white-space: nowrap;
-        }
-
-        .service-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-gray);
-            font-weight: 500;
-        }
-
-        .premium-badge {
-            color: var(--accent-gold);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .input-pixel {
-            background-color: #f9fafb;
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            padding: 16px;
-            font-size: 15px;
-            width: 100%;
-            box-sizing: border-box;
-            outline: none;
-            text-align: center;
-            border-radius: 12px;
-            transition: border-color 0.2s;
-        }
-
-        .input-pixel:focus {
-            border-color: var(--primary-btn);
-            background-color: #fff;
-        }
-
-        .btn-pixel {
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            background-color: var(--primary-btn);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            padding: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            width: 100%;
-        }
-
-        .btn-pixel:hover {
-            opacity: 0.9;
-        }
-
-        .calendar-wrapper {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 15px;
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-btn {
-            background: #f3f4f6;
-            border: none;
-            color: var(--text-main);
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-
-        .calendar-btn:hover {
-            background: #e5e7eb;
-        }
-
-        .calendar-month-year {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-gray);
-            margin-bottom: 10px;
-        }
-
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 8px;
-        }
-
-        .calendar-day {
-            text-align: center;
-            padding: 10px 2px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 8px;
-            background-color: #fff;
-            border: 1px solid transparent;
-            transition: all 0.2s;
-        }
-
-        .calendar-day:hover:not(.past) {
-            background-color: var(--primary-btn);
-            color: #fff;
-        }
-
-        .calendar-day.empty {
-            background: none;
-            cursor: default;
-        }
-
-        .calendar-day.sunday {
-            color: var(--danger-red);
-        }
-
-        .calendar-day.past {
-            color: #d1d5db !important;
-            cursor: not-allowed;
-            text-decoration: line-through;
-        }
-
-        .time-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .time-card {
-            text-align: center;
-            font-size: 14px;
-            font-weight: 600;
-            padding: 16px 5px;
-        }
-
-        .btn-back {
-            background: none;
-            border: none;
-            color: var(--text-gray);
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            align-self: center;
-            margin-top: 15px;
-            transition: color 0.2s;
-        }
-        
-        .btn-back:hover {
-            color: var(--text-main);
-        }
-
-        .admin-card {
-            cursor: default;
-            gap: 8px;
-        }
-
-        .admin-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--border-color);
-            padding-top: 12px;
-            margin-top: 4px;
-        }
-
-        .admin-info {
-            font-size: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            color: var(--text-gray);
-        }
-
-        .admin-info span:first-child {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .admin-btn-cancel {
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            background-color: #fee2e2;
-            color: var(--danger-red);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .admin-btn-cancel:hover {
-            background-color: #fecaca;
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-gray);
-            border-top: 1px solid var(--border-color);
-            padding-top: 30px;
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .btn-whatsapp {
-            color: #fff;
-            background-color: #25D366; /* Cor oficial do WhatsApp */
-            text-decoration: none;
-            display: block;
-            margin: 15px auto;
-            padding: 14px;
-            border-radius: 12px;
-            width: 100%;
-            box-sizing: border-box;
-            font-weight: 600;
-            font-size: 14px;
-            transition: opacity 0.2s;
-        }
-        
-        .btn-whatsapp:hover {
-            opacity: 0.9;
-        }
-
-        .admin-access-link {
-            font-size: 12px;
-            color: var(--text-gray);
-            cursor: pointer;
-            margin-top: 20px;
-            display: block;
-            font-weight: 500;
-        }
-        
-        #admin-login-box {
-            background-color: #f9fafb;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 15px;
-        }
-
-        .loading-text {
-            grid-column: span 2;
-            text-align: center;
-            color: var(--text-gray);
-            font-size: 13px;
-            padding: 20px 0;
-        }
+        /* FOOTER */
+        .footer { text-align:center;font-size:12px;color:var(--text-gray);border-top:1px solid var(--border-color);padding-top:30px;margin-top:40px;display:flex;flex-direction:column;gap:12px; }
+        .btn-whatsapp { color:#fff;background-color:#25D366;text-decoration:none;display:block;margin:15px auto;padding:14px;border-radius:12px;width:100%;box-sizing:border-box;font-weight:600;font-size:14px;transition:opacity 0.2s; }
+        .btn-whatsapp:hover { opacity:0.9; }
+        .admin-access-link { font-size:12px;color:var(--text-gray);cursor:pointer;margin-top:20px;display:block;font-weight:500; }
+        #admin-login-box { background-color:#f9fafb;border:1px solid var(--border-color);border-radius:12px;padding:20px;margin-top:15px; }
+        .loading-text { grid-column:span 2;text-align:center;color:var(--text-gray);font-size:13px;padding:20px 0; }
+        .empty-state { text-align:center;color:var(--text-gray);font-size:13px;padding:30px 0;font-style:italic; }
     </style>
 </head>
 <body>
-
 <div class="container">
 
     <div class="banner-container">
         <img src="banner.png" alt="Don Bigode Banner" class="banner-img">
     </div>
-
     <div class="header">
         <img src="logo.png" alt="Don Bigode Logo" class="logo-img">
         <h1>Don Bigode</h1>
@@ -439,78 +138,43 @@
     <div id="step-services">
         <div class="section-title">Selecione o Serviço</div>
         <div class="services-list">
-            <div class="service-card" onclick="selectService('🔌 Corte Máquina', 'R$ 40,00')">
-                <div class="service-header">
-                    <span class="service-title">🔌 Corte Máquina</span>
-                    <span class="service-price">R$ 40,00</span>
-                </div>
-                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            <div class="service-card" onclick="selectService('🔌 Corte Máquina', 'R$ 40,00', 40)">
+                <div class="service-header"><span class="service-title">🔌 Corte Máquina</span><span class="service-price">R$ 40,00</span></div>
+                <div class="service-meta"><span>Duração: 1h</span><span>[ Agendar ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('💈 Máquina e Tesoura', 'R$ 45,00')">
-                <div class="service-header">
-                    <span class="service-title">💈 Máquina e Tesoura</span>
-                    <span class="service-price">R$ 45,00</span>
-                </div>
-                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            <div class="service-card" onclick="selectService('💈 Máquina e Tesoura', 'R$ 45,00', 45)">
+                <div class="service-header"><span class="service-title">💈 Máquina e Tesoura</span><span class="service-price">R$ 45,00</span></div>
+                <div class="service-meta"><span>Duração: 1h</span><span>[ Agendar ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('✂️ Corte Tesoura', 'R$ 50,00')">
-                <div class="service-header">
-                    <span class="service-title">✂️ Corte Tesoura</span>
-                    <span class="service-price">R$ 50,00</span>
-                </div>
-                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            <div class="service-card" onclick="selectService('✂️ Corte Tesoura', 'R$ 50,00', 50)">
+                <div class="service-header"><span class="service-title">✂️ Corte Tesoura</span><span class="service-price">R$ 50,00</span></div>
+                <div class="service-meta"><span>Duração: 1h</span><span>[ Agendar ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('🪒 Barba', 'R$ 35,00')">
-                <div class="service-header">
-                    <span class="service-title">🪒 Barba</span>
-                    <span class="service-price">R$ 35,00</span>
-                </div>
-                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            <div class="service-card" onclick="selectService('🪒 Barba', 'R$ 35,00', 35)">
+                <div class="service-header"><span class="service-title">🪒 Barba</span><span class="service-price">R$ 35,00</span></div>
+                <div class="service-meta"><span>Duração: 1h</span><span>[ Agendar ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('👑 Cabelo e Barba', 'R$ 60,00')">
-                <div class="service-header">
-                    <span class="service-title">👑 Cabelo e Barba</span>
-                    <span class="service-price">R$ 60,00</span>
-                </div>
-                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            <div class="service-card" onclick="selectService('👑 Cabelo e Barba', 'R$ 60,00', 60)">
+                <div class="service-header"><span class="service-title">👑 Cabelo e Barba</span><span class="service-price">R$ 60,00</span></div>
+                <div class="service-meta"><span>Duração: 1h</span><span>[ Agendar ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('✨ Barba + Esfoliação', 'R$ 45,00')">
-                <div class="service-header">
-                    <span class="service-title">✨ Barba + Esfoliação</span>
-                    <span class="service-price">R$ 45,00</span>
-                </div>
-                <div class="service-meta"><span>⏱ Duração: 55m</span><span>[ Agendar ]</span></div>
+            <div class="service-card" onclick="selectService('✨ Barba + Esfoliação', 'R$ 45,00', 45)">
+                <div class="service-header"><span class="service-title">✨ Barba + Esfoliação</span><span class="service-price">R$ 45,00</span></div>
+                <div class="service-meta"><span>Duração: 55m</span><span>[ Agendar ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('🎮 Corte Infantil', 'R$ 50,00')">
-                <div class="service-header">
-                    <span class="service-title">🎮 Corte Infantil</span>
-                    <span class="service-price">R$ 50,00</span>
-                </div>
-                <div class="service-meta"><span>⏱ Duração: 1h</span><span>[ Agendar ]</span></div>
+            <div class="service-card" onclick="selectService('🎮 Corte Infantil', 'R$ 50,00', 50)">
+                <div class="service-header"><span class="service-title">🎮 Corte Infantil</span><span class="service-price">R$ 50,00</span></div>
+                <div class="service-meta"><span>Duração: 1h</span><span>[ Agendar ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('⭐ Combo Premium', 'R$ 80,00')">
-                <div class="service-header">
-                    <span class="service-title premium-badge">⭐ Combo Premium</span>
-                    <span class="service-price">R$ 80,00</span>
-                </div>
+            <div class="service-card" onclick="selectService('⭐ Combo Premium', 'R$ 80,00', 80)">
+                <div class="service-header"><span class="service-title premium-badge">⭐ Combo Premium</span><span class="service-price">R$ 80,00</span></div>
                 <div class="service-meta"><span>Cabelo, Barba, Sobrancelha + Pigmentação</span></div>
-                <div class="service-meta"><span>⏱ Duração: 1h 20m</span><span style="color: #ffcc00;">[ RETRÔ UP ]</span></div>
+                <div class="service-meta"><span>Duração: 1h 20m</span><span style="color:#ffcc00;">[ RETRÔ UP ]</span></div>
             </div>
-
-            <div class="service-card" onclick="selectService('🔥 Premium Ultimate', 'R$ 100,00')">
-                <div class="service-header">
-                    <span class="service-title premium-badge">🔥 Premium Ultimate</span>
-                    <span class="service-price">R$ 100,00</span>
-                </div>
+            <div class="service-card" onclick="selectService('🔥 Premium Ultimate', 'R$ 100,00', 100)">
+                <div class="service-header"><span class="service-title premium-badge">🔥 Premium Ultimate</span><span class="service-price">R$ 100,00</span></div>
                 <div class="service-meta"><span>Premium + Cera Quente e Esfoliação</span></div>
-                <div class="service-meta"><span>⏱ Duração: 2h</span><span style="color: #ffcc00;">[ MAX LEVEL ]</span></div>
+                <div class="service-meta"><span>Duração: 2h</span><span style="color:#ffcc00;">[ MAX LEVEL ]</span></div>
             </div>
         </div>
     </div>
@@ -540,39 +204,61 @@
 
     <div id="step-time" class="step-container hidden">
         <div class="section-title">Horários Disponíveis</div>
-        <p style="text-align: center; color: var(--accent-gold); font-size: 8px; margin: 0 0 10px 0;">Sessões de 1 hora</p>
+        <p style="text-align:center;color:var(--accent-gold);font-size:13px;margin:0 0 10px 0;">Sessões de 1 hora</p>
         <div id="time-grid-container" class="time-grid"></div>
         <button class="btn-back" onclick="goBack('date')">[ Voltar ]</button>
     </div>
 
     <div id="step-admin" class="step-container hidden">
-        <div class="section-title" style="color: var(--accent-gold);">Painel Don Bigode</div>
-        <p style="text-align: center; font-size: 13px; color: var(--text-gray); margin: 0 0 10px 0;">Clique em LIBERAR para restaurar o horário</p>
-        <div id="admin-agenda-container" style="display: flex; flex-direction: column; gap: 12px;"></div>
-        <button class="btn-pixel" style="margin-top: 15px;" onclick="goBack('services')">Sair do Painel</button>
+        <div class="section-title" style="color:var(--accent-gold);">Painel Don Bigode</div>
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="switchAdminTab('agenda')">📅 Agenda do Dia</button>
+            <button class="admin-tab" onclick="switchAdminTab('horarios')">⏱ Horários</button>
+            <button class="admin-tab" onclick="switchAdminTab('relatorios')">📊 Relatórios</button>
+        </div>
+        <div id="admin-tab-agenda" class="admin-tab-content active">
+            <p style="font-size:13px;color:var(--text-gray);margin:0 0 14px 0;text-align:center;">Agendamentos de hoje — clique em LIBERAR para cancelar.</p>
+            <div id="admin-agenda-container" style="display:flex;flex-direction:column;gap:12px;"></div>
+        </div>
+        <div id="admin-tab-horarios" class="admin-tab-content">
+            <p style="font-size:13px;color:var(--text-gray);margin:0 0 12px 0;text-align:center;">Ative ou desative horários para um dia específico.</p>
+            <div class="hours-date-selector">
+                <input type="date" id="hours-date-input">
+                <button class="btn-load-hours" onclick="loadHoursForDate()">Carregar</button>
+            </div>
+            <div id="hours-manager-container" class="hours-manager"></div>
+            <div class="hours-save-bar" id="hours-save-bar" style="display:none;">
+                <button class="btn-pixel btn-green" onclick="saveHoursForDate()">💾 Salvar Horários</button>
+                <div class="hours-status" id="hours-status"></div>
+            </div>
+        </div>
+        <div id="admin-tab-relatorios" class="admin-tab-content">
+            <div class="report-selector">
+                <select id="report-month-select"></select>
+                <button class="btn-load-report" onclick="loadReport()">Ver</button>
+            </div>
+            <div id="report-container"></div>
+        </div>
+        <button class="btn-pixel" style="margin-top:20px;" onclick="goBack('services')">Sair do Painel</button>
     </div>
 
     <div class="footer">
         <p>📍 LOCALIZAÇÃO:<br>R. ALBERTO TORRES, 189 - CIRCULAR<br>DUQUE DE CAXIAS - RJ</p>
         <p>📞 CONTATO: (21) 96914-0228</p>
         <a href="https://wa.me/5521969140228" target="_blank" class="btn-whatsapp">Iniciar Chat</a>
-        
         <span class="admin-access-link" id="admin-trigger" onclick="toggleLoginBox()">ENTRAR COMO ADMINISTRADOR</span>
-        
         <div id="admin-login-box" class="hidden">
-            <p style="color:#fff; font-size:13px; margin-bottom:10px;">ACESSO RESTRITO</p>
+            <p style="font-size:13px;margin-bottom:10px;color:var(--text-gray);">ACESSO RESTRITO</p>
             <input type="password" id="admin-password-input" class="input-pixel" placeholder="SENHA...">
-            <button class="btn-pixel" style="margin-top:10px; width:100%;" onclick="checkAdminPassword()">ENTRAR</button>
+            <button class="btn-pixel" style="margin-top:10px;width:100%;" onclick="checkAdminPassword()">ENTRAR</button>
         </div>
-
-        <p style="font-size: 5px; color: #444; margin-top: 25px;">PRESS START TO INSERT COIN</p>
+        <p style="font-size:11px;color:#aaa;margin-top:25px;">PRESS START TO INSERT COIN</p>
     </div>
-
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDj_hgJOa4JOKd8uKbHRCpDyoiuvm_9240",
@@ -586,110 +272,171 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    window.appointment = { service: '', price: '', name: '', dateText: '', dateKey: '', isSunday: false, time: '' };
+    window.appointment = { service: '', price: '', priceNum: 0, name: '', dateText: '', dateKey: '', isSunday: false, time: '' };
 
-    const baseHours = ["10:00 - 11:00", "11:00 - 12:00", "12:00 - 13:00", "13:00 - 14:00", "14:00 - 15:00", "15:00 - 16:00", "16:00 - 17:00", "17:00 - 18:00", "18:00 - 19:00", "19:00 - 20:00"];
-    const monthNames = ["JANEIRO", "FEVEREIRO", "MARÇO", "ABRIL", "MAIO", "JUNHO", "JULHO", "AGOSTO", "SETEMBRO", "OUTUBRO", "NOVEMBRO", "DEZEMBRO"];
-    const weekDaysShort = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
-    const REAL_TODAY = new Date(); REAL_TODAY.setHours(0, 0, 0, 0); 
+    const DEFAULT_HOURS = ["10:00 - 11:00","11:00 - 12:00","12:00 - 13:00","13:00 - 14:00","14:00 - 15:00","15:00 - 16:00","16:00 - 17:00","17:00 - 18:00","18:00 - 19:00","19:00 - 20:00"];
+    const monthNames = ["JANEIRO","FEVEREIRO","MARÇO","ABRIL","MAIO","JUNHO","JULHO","AGOSTO","SETEMBRO","OUTUBRO","NOVEMBRO","DEZEMBRO"];
+    const weekDaysShort = ["DOMINGO","SEGUNDA","TERÇA","QUARTA","QUINTA","SEXTA","SÁBADO"];
+
+    const REAL_TODAY = new Date(); REAL_TODAY.setHours(0,0,0,0);
     let currentNavDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
 
-    window.selectService = function(serviceName, servicePrice) {
-        window.appointment.service = serviceName; window.appointment.price = servicePrice;
-        document.getElementById('step-services').classList.add('hidden'); document.getElementById('step-name').classList.remove('hidden');
+    function todayKey() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    // SERVICOS
+    window.selectService = function(serviceName, servicePrice, priceNum) {
+        window.appointment.service = serviceName;
+        window.appointment.price = servicePrice;
+        window.appointment.priceNum = priceNum;
+        document.getElementById('step-services').classList.add('hidden');
+        document.getElementById('step-name').classList.remove('hidden');
         document.getElementById('client-name').focus();
     }
 
+    // NOME
     window.confirmName = function() {
         const nameInput = document.getElementById('client-name').value.trim();
-        if(nameInput === "") { alert("POR FAVOR, INSIRA SEU NOME PARA CONTINUAR!"); return; }
+        if (nameInput === "") { alert("POR FAVOR, INSIRA SEU NOME PARA CONTINUAR!"); return; }
         window.appointment.name = nameInput;
-        document.getElementById('step-name').classList.add('hidden'); document.getElementById('step-date').classList.remove('hidden');
+        document.getElementById('step-name').classList.add('hidden');
+        document.getElementById('step-date').classList.remove('hidden');
         renderCalendar();
     }
 
+    // CALENDARIO
     function renderCalendar() {
         const year = currentNavDate.getFullYear(); const month = currentNavDate.getMonth();
         document.getElementById('calendar-title').innerText = `${monthNames[month]} ${year}`;
         const container = document.getElementById('calendar-days-container'); container.innerHTML = '';
-        const firstDayIndex = new Date(year, month, 1).getDay(); const lastDay = new Date(year, month + 1, 0).getDate();
-
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const lastDay = new Date(year, month+1, 0).getDate();
         for (let i = 0; i < firstDayIndex; i++) {
             const div = document.createElement('div'); div.className = 'calendar-day empty'; container.appendChild(div);
         }
         for (let day = 1; day <= lastDay; day++) {
             const dateObj = new Date(year, month, day); dateObj.setHours(0,0,0,0);
-            const dayOfWeek = dateObj.getDay(); const dayNumStr = day.toString().padStart(2, '0'); const monthNumStr = (month + 1).toString().padStart(2, '0');
-            const storageKey = `${year}-${monthNumStr}-${dayNumStr}`; const displayDateText = `${weekDaysShort[dayOfWeek]} (${dayNumStr}/${monthNumStr})`;
+            const dayOfWeek = dateObj.getDay();
+            const dayNumStr = day.toString().padStart(2,'0');
+            const monthNumStr = (month+1).toString().padStart(2,'0');
+            const storageKey = `${year}-${monthNumStr}-${dayNumStr}`;
+            const displayDateText = `${weekDaysShort[dayOfWeek]} (${dayNumStr}/${monthNumStr})`;
             const div = document.createElement('div'); div.className = 'calendar-day'; div.innerText = day;
-            if (dateObj < REAL_TODAY) { div.classList.add('past'); } else {
-                if (dayOfWeek === 0) { div.classList.add('sunday'); div.onclick = function() { selectDate(displayDateText, storageKey, true); };
-                } else { div.onclick = function() { selectDate(displayDateText, storageKey, false); }; }
+            if (dateObj < REAL_TODAY) {
+                div.classList.add('past');
+            } else if (dayOfWeek === 0) {
+                div.classList.add('sunday');
+                div.onclick = function() { selectDate(displayDateText, storageKey, true); };
+            } else {
+                div.onclick = function() { selectDate(displayDateText, storageKey, false); };
             }
             container.appendChild(div);
         }
     }
 
     window.changeMonth = function(direction) {
-        const testDate = new Date(currentNavDate.getFullYear(), currentNavDate.getMonth() + direction, 1);
+        const testDate = new Date(currentNavDate.getFullYear(), currentNavDate.getMonth()+direction, 1);
         const limitDate = new Date(REAL_TODAY.getFullYear(), REAL_TODAY.getMonth(), 1);
         if (testDate < limitDate) return;
-        currentNavDate.setMonth(currentNavDate.getMonth() + direction); renderCalendar();
+        currentNavDate.setMonth(currentNavDate.getMonth()+direction); renderCalendar();
     }
 
     function selectDate(dateText, dateKey, isSunday) {
         window.appointment.dateText = dateText; window.appointment.dateKey = dateKey; window.appointment.isSunday = isSunday;
-        document.getElementById('step-date').classList.add('hidden'); document.getElementById('step-time').classList.remove('hidden');
+        document.getElementById('step-date').classList.add('hidden');
+        document.getElementById('step-time').classList.remove('hidden');
         renderHours();
     }
 
+    // HORARIOS
+    async function getAvailableHoursForDate(dateKey) {
+        try {
+            const snap = await getDoc(doc(db, "config_horarios", dateKey));
+            if (snap.exists() && snap.data().hours) return snap.data().hours;
+        } catch(e) {}
+        return DEFAULT_HOURS;
+    }
+
     async function renderHours() {
-        const grid = document.getElementById('time-grid-container'); grid.innerHTML = '<div class="loading-text">CARREGANDO NUVEM...</div>';
-        if (window.appointment.isSunday) { grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>'; return; }
+        const grid = document.getElementById('time-grid-container');
+        grid.innerHTML = '<div class="loading-text">Carregando horários...</div>';
+        if (window.appointment.isSunday) {
+            grid.innerHTML = '<p style="grid-column:span 2;text-align:center;color:var(--danger-red);font-size:13px;padding:20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>'; return;
+        }
         let takenHoursList = [];
         try {
-            const docRef = doc(db, "agenda", window.appointment.dateKey); const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) { takenHoursList = (docSnap.data().appointments || []).map(app => app.hour); }
-        } catch (error) { console.error(error); }
-        grid.innerHTML = ''; let availableCount = 0;
-        baseHours.forEach(hour => {
+            const docSnap = await getDoc(doc(db, "agenda", window.appointment.dateKey));
+            if (docSnap.exists()) takenHoursList = (docSnap.data().appointments || []).map(a => a.hour);
+        } catch(e) { console.error(e); }
+        const availableHours = await getAvailableHoursForDate(window.appointment.dateKey);
+        grid.innerHTML = '';
+        let count = 0;
+        availableHours.forEach(hour => {
             if (!takenHoursList.includes(hour)) {
-                availableCount++; const card = document.createElement('div'); card.className = 'time-card'; card.innerText = hour;
+                count++;
+                const card = document.createElement('div'); card.className = 'time-card'; card.innerText = hour;
                 card.onclick = function() { finalizeAppointment(hour); }; grid.appendChild(card);
             }
         });
-        if (availableCount === 0) grid.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#ff3333; font-size:8px; padding: 20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
+        if (count === 0) grid.innerHTML = '<p style="grid-column:span 2;text-align:center;color:var(--danger-red);font-size:13px;padding:20px 0;">SEM HORÁRIOS DISPONÍVEIS</p>';
     }
 
+    // FINALIZAR AGENDAMENTO
     async function finalizeAppointment(selectedTime) {
         window.appointment.time = selectedTime;
+        const dateKey = window.appointment.dateKey;
         try {
-            const docRef = doc(db, "agenda", window.appointment.dateKey); const docSnap = await getDoc(docRef);
-            let currentAppointments = docSnap.exists() ? (docSnap.data().appointments || []) : [];
-            if (currentAppointments.some(app => app.hour === selectedTime)) { alert("HORÁRIO JÁ RESERVADO!"); renderHours(); return; }
-            currentAppointments.push({ hour: selectedTime, name: window.appointment.name, service: window.appointment.service });
-            await setDoc(docRef, { appointments: currentAppointments }, { merge: true });
-            const globalIndexRef = doc(db, "config", "active_dates"); const indexSnap = await getDoc(globalIndexRef);
-            let activeDatesList = indexSnap.exists() ? (indexSnap.data().list || []) : [];
-            if (!activeDatesList.includes(window.appointment.dateKey)) { activeDatesList.push(window.appointment.dateKey); await setDoc(globalIndexRef, { list: activeDatesList }); }
-        } catch (error) { alert("ERRO AO SALVAR."); return; }
+            const docRef = doc(db, "agenda", dateKey);
+            const docSnap = await getDoc(docRef);
+            let currentApps = docSnap.exists() ? (docSnap.data().appointments || []) : [];
+            if (currentApps.some(a => a.hour === selectedTime)) { alert("HORÁRIO JÁ RESERVADO!"); renderHours(); return; }
+            currentApps.push({ hour: selectedTime, name: window.appointment.name, service: window.appointment.service, price: window.appointment.priceNum });
+            await setDoc(docRef, { appointments: currentApps }, { merge: true });
+            const indexRef = doc(db, "config", "active_dates");
+            const indexSnap = await getDoc(indexRef);
+            let list = indexSnap.exists() ? (indexSnap.data().list || []) : [];
+            if (!list.includes(dateKey)) { list.push(dateKey); await setDoc(indexRef, { list }); }
+            await updateMonthlyRevenue(dateKey, window.appointment.priceNum, 'add');
+        } catch(e) { alert("ERRO AO SALVAR."); return; }
         const phoneNumber = "5521969140228";
-        const message = `Olá, Don Bigode! Gostaria de realizar um agendamento:\n\n👤 Nome: ${window.appointment.name}\n✂️ Serviço: ${window.appointment.service} (${window.appointment.price})\n📅 Data: ${window.appointment.dateText}\n⏱ Horário: ${window.appointment.time}`;
-        document.getElementById('client-name').value = ''; window.goBack('services');
+        const message = `Olá, Don Bigode! Gostaria de realizar um agendamento:\n\n👤 Nome: ${window.appointment.name}
+✂️ Serviço: ${window.appointment.service} (${window.appointment.price})
+📅 Data: ${window.appointment.dateText}
+⏱ Horário: ${window.appointment.time}`;
+        document.getElementById('client-name').value = '';
+        window.goBack('services');
         window.location.href = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     }
 
+    // FATURAMENTO MENSAL
+    async function updateMonthlyRevenue(dateKey, amount, operation) {
+        const parts = dateKey.split('-');
+        const year = parts[0]; const month = parts[1];
+        const revenueKey = `${year}-${month}`;
+        const ref = doc(db, "faturamento", revenueKey);
+        try {
+            const snap = await getDoc(ref);
+            const current = snap.exists() ? (snap.data() || {}) : {};
+            const currentTotal = current.total || 0;
+            const currentCount = current.count || 0;
+            const newTotal = operation === 'add' ? currentTotal + amount : Math.max(0, currentTotal - amount);
+            const newCount = operation === 'add' ? currentCount + 1 : Math.max(0, currentCount - 1);
+            await setDoc(ref, { total: newTotal, count: newCount, year: parseInt(year), month: parseInt(month) }, { merge: true });
+        } catch(e) { console.error("Erro ao atualizar faturamento:", e); }
+    }
+
+    // LOGIN ADMIN
     window.toggleLoginBox = function() {
         const box = document.getElementById('admin-login-box');
         box.classList.toggle('hidden');
-        if(!box.classList.contains('hidden')) {
-            document.getElementById('admin-password-input').focus();
-        }
+        if (!box.classList.contains('hidden')) document.getElementById('admin-password-input').focus();
     }
 
     window.checkAdminPassword = function() {
-        const passInput = document.getElementById('admin-password-input').value;
-        if(passInput === "admin") {
+        const pass = document.getElementById('admin-password-input').value;
+        if (pass === "admin") {
             document.getElementById('admin-password-input').value = "";
             document.getElementById('admin-login-box').classList.add('hidden');
             openAdminPanel();
@@ -703,58 +450,213 @@
         document.querySelectorAll('.step-container').forEach(s => s.classList.add('hidden'));
         document.getElementById('step-services').classList.add('hidden');
         document.getElementById('step-admin').classList.remove('hidden');
-        renderAdminAgenda();
+        populateReportMonthSelect();
+        switchAdminTab('agenda');
     }
 
+    window.switchAdminTab = function(tab) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+        const tabs = ['agenda','horarios','relatorios'];
+        document.querySelectorAll('.admin-tab')[tabs.indexOf(tab)].classList.add('active');
+        document.getElementById('admin-tab-' + tab).classList.add('active');
+        if (tab === 'agenda') renderAdminAgenda();
+        if (tab === 'horarios') initHoursManager();
+        if (tab === 'relatorios') loadReport();
+    }
+
+    // AGENDA DO DIA
     async function renderAdminAgenda() {
-        const container = document.getElementById('admin-agenda-container'); container.innerHTML = '<div class="loading-text">CARREGANDO NUVEM...</div>';
+        const container = document.getElementById('admin-agenda-container');
+        container.innerHTML = '<div class="empty-state">Carregando...</div>';
+        const key = todayKey();
+        const parts = key.split('-');
+        const year = parts[0]; const month = parts[1]; const day = parts[2];
         try {
+            const snap = await getDoc(doc(db, "agenda", key));
+            if (!snap.exists() || !(snap.data().appointments || []).length) {
+                container.innerHTML = '<div class="empty-state">Nenhum agendamento para hoje.</div>'; return;
+            }
+            const appointments = (snap.data().appointments || []).sort((a,b) => a.hour.localeCompare(b.hour));
+            container.innerHTML = '';
+            const card = document.createElement('div'); card.className = 'admin-card';
+            card.innerHTML = '<div class="admin-date-header"><span>HOJE — ' + day + '/' + month + '/' + year + '</span><span style="font-size:12px;color:var(--text-gray);">' + appointments.length + ' agend.</span></div>';
+            appointments.forEach((app, index) => {
+                const row = document.createElement('div'); row.className = 'admin-row';
+                const btn = document.createElement('button'); btn.className = 'admin-btn-cancel'; btn.innerText = 'LIBERAR';
+                btn.onclick = function() { cancelSlot(key, index, app.price || 0); };
+                row.innerHTML = '<div class="admin-info"><span>' + app.hour + '</span><span>' + app.name + '</span><span>' + app.service + '</span></div>';
+                row.appendChild(btn); card.appendChild(row);
+            });
+            container.appendChild(card);
+        } catch(e) { container.innerHTML = '<div class="empty-state">Erro ao carregar agenda.</div>'; }
+    }
+
+    async function cancelSlot(dateKey, index, price) {
+        if (!confirm("LIBERAR HORÁRIO? O agendamento será removido.")) return;
+        try {
+            const docRef = doc(db, "agenda", dateKey);
+            const snap = await getDoc(docRef);
+            if (snap.exists()) {
+                let apps = snap.data().appointments || [];
+                const removed = apps.splice(index, 1)[0];
+                await setDoc(docRef, { appointments: apps }, { merge: true });
+                const removedPrice = (removed && removed.price) ? removed.price : price;
+                if (removedPrice > 0) await updateMonthlyRevenue(dateKey, removedPrice, 'remove');
+                renderAdminAgenda();
+            }
+        } catch(e) { alert("ERRO AO LIBERAR."); }
+    }
+
+    // GERENCIAR HORARIOS
+    function initHoursManager() {
+        const input = document.getElementById('hours-date-input');
+        if (!input.value) {
+            const today = new Date();
+            input.value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+        }
+        document.getElementById('hours-manager-container').innerHTML = '<div class="empty-state">Selecione uma data e clique em Carregar.</div>';
+        document.getElementById('hours-save-bar').style.display = 'none';
+    }
+
+    window.loadHoursForDate = async function() {
+        const dateInput = document.getElementById('hours-date-input').value;
+        if (!dateInput) { alert("Selecione uma data."); return; }
+        const container = document.getElementById('hours-manager-container');
+        container.innerHTML = '<div class="empty-state">Carregando...</div>';
+        let enabledHours = DEFAULT_HOURS.slice();
+        try {
+            const snap = await getDoc(doc(db, "config_horarios", dateInput));
+            if (snap.exists() && snap.data().hours) enabledHours = snap.data().hours;
+        } catch(e) {}
+        let takenHours = [];
+        try {
+            const agSnap = await getDoc(doc(db, "agenda", dateInput));
+            if (agSnap.exists()) takenHours = (agSnap.data().appointments || []).map(a => a.hour);
+        } catch(e) {}
+        container.innerHTML = '';
+        DEFAULT_HOURS.forEach(hour => {
+            const isEnabled = enabledHours.includes(hour);
+            const isTaken = takenHours.includes(hour);
+            const row = document.createElement('div'); row.className = 'hour-toggle-row';
+            const takenLabel = isTaken ? ' <span style="font-size:11px;color:var(--accent-gold);font-weight:400;">agendado</span>' : '';
+            row.innerHTML = '<span class="hour-toggle-label">' + hour + takenLabel + '</span>' +
+                '<label class="toggle-switch"><input type="checkbox" data-hour="' + hour + '"' + (isEnabled ? ' checked' : '') + (isTaken ? ' disabled' : '') + '><span class="toggle-slider"></span></label>';
+            container.appendChild(row);
+        });
+        document.getElementById('hours-save-bar').style.display = 'block';
+        document.getElementById('hours-status').textContent = '';
+    }
+
+    window.saveHoursForDate = async function() {
+        const dateInput = document.getElementById('hours-date-input').value;
+        const checks = document.querySelectorAll('#hours-manager-container input[type="checkbox"]');
+        const enabledHours = Array.from(checks).filter(c => c.checked && !c.disabled).map(c => c.dataset.hour);
+        let takenHours = [];
+        try {
+            const agSnap = await getDoc(doc(db, "agenda", dateInput));
+            if (agSnap.exists()) takenHours = (agSnap.data().appointments || []).map(a => a.hour);
+        } catch(e) {}
+        const finalHours = [...new Set([...enabledHours, ...takenHours])].sort();
+        try {
+            await setDoc(doc(db, "config_horarios", dateInput), { hours: finalHours });
+            const statusEl = document.getElementById('hours-status');
+            statusEl.textContent = '✅ Horários salvos com sucesso!';
+            statusEl.style.color = 'var(--success-green)';
+        } catch(e) {
+            const statusEl = document.getElementById('hours-status');
+            statusEl.textContent = '❌ Erro ao salvar.';
+            statusEl.style.color = 'var(--danger-red)';
+        }
+    }
+
+    // RELATORIOS
+    function populateReportMonthSelect() {
+        const sel = document.getElementById('report-month-select');
+        if (sel.options.length > 0) return;
+        const now = new Date();
+        for (let i = 0; i < 12; i++) {
+            const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+            const label = monthNames[d.getMonth()] + ' ' + d.getFullYear();
+            const opt = document.createElement('option'); opt.value = value; opt.textContent = label;
+            sel.appendChild(opt);
+        }
+    }
+
+    window.loadReport = async function() {
+        const sel = document.getElementById('report-month-select');
+        if (!sel || !sel.value) return;
+        const parts = sel.value.split('-');
+        const year = parts[0]; const month = parts[1];
+        const container = document.getElementById('report-container');
+        container.innerHTML = '<div class="empty-state">Carregando relatório...</div>';
+        try {
+            const revSnap = await getDoc(doc(db, "faturamento", sel.value));
+            const revData = revSnap.exists() ? revSnap.data() : { total: 0, count: 0 };
+            const total = revData.total || 0;
+            const count = revData.count || 0;
             const indexSnap = await getDoc(doc(db, "config", "active_dates"));
-            if (!indexSnap.exists()) { container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:13px; padding: 30px 0;">AGENDA VAZIA.</p>'; return; }
-            let activeDatesList = (indexSnap.data().list || []).sort();
-            container.innerHTML = ''; let hasApp = false;
-            for (const dateKey of activeDatesList) {
-                const docSnap = await getDoc(doc(db, "agenda", dateKey));
-                if (docSnap.exists()) {
-                    let appointments = docSnap.data().appointments || [];
-                    if (appointments.length > 0) {
-                        hasApp = true;
-                        const [year, month, day] = dateKey.split('-');
-                        const card = document.createElement('div'); card.className = 'admin-card';
-                        card.innerHTML = `<div style="color:var(--accent-gold); font-size:14px;">📅 DIA: ${day}/${month}/${year}</div>`;
-                        appointments.sort((a, b) => a.hour.localeCompare(b.hour)).forEach((app, index) => {
-                            const row = document.createElement('div'); row.className = 'admin-row';
-                            const btn = document.createElement('button'); btn.className = 'admin-btn-cancel'; btn.innerText = 'LIBERAR';
-                            btn.onclick = function() { cancelSlot(dateKey, index); };
-                            row.innerHTML = `<div class="admin-info"><span style="color:#fff;">⏱ ${app.hour}</span><span>👤 ${app.name}</span><span style="font-size:13px;">✂️ ${app.service}</span></div>`;
-                            row.appendChild(btn); card.appendChild(row);
+            let allApps = [];
+            if (indexSnap.exists()) {
+                const prefix = year + '-' + month;
+                const dates = (indexSnap.data().list || []).filter(d => d.startsWith(prefix));
+                for (const dateKey of dates.sort()) {
+                    const snap = await getDoc(doc(db, "agenda", dateKey));
+                    if (snap.exists()) {
+                        const dp = dateKey.split('-');
+                        (snap.data().appointments || []).forEach(app => {
+                            allApps.push(Object.assign({}, app, { dateKey: dateKey, displayDate: dp[2] + '/' + dp[1] }));
                         });
-                        container.appendChild(card);
                     }
                 }
             }
-            if(!hasApp) container.innerHTML = '<p style="text-align:center; color:var(--text-gray); font-size:13px; padding: 30px 0;">AGENDA VAZIA.</p>';
-        } catch (error) { container.innerHTML = '<p>ERRO AO BUSCAR DADOS.</p>'; }
-    }
-
-    async function cancelSlot(dateKey, index) {
-        if (!confirm("LIBERAR HORÁRIO?")) return;
-        try {
-            const docRef = doc(db, "agenda", dateKey); const docSnap = await getDoc(docRef);
-            if (docSnap.exists()) {
-                let appointments = docSnap.data().appointments || []; appointments.splice(index, 1);
-                await setDoc(docRef, { appointments: appointments }, { merge: true }); renderAdminAgenda();
+            allApps.sort((a,b) => a.dateKey.localeCompare(b.dateKey) || a.hour.localeCompare(b.hour));
+            const avgTicket = count > 0 ? (total / count) : 0;
+            const serviceCount = {};
+            allApps.forEach(a => { serviceCount[a.service] = (serviceCount[a.service] || 0) + 1; });
+            const topEntry = Object.entries(serviceCount).sort((a,b) => b[1]-a[1])[0];
+            const topServiceName = topEntry ? topEntry[0].split(' ').slice(0,2).join(' ') : '-';
+            const topServiceQty = topEntry ? topEntry[1] : 0;
+            container.innerHTML =
+                '<div class="report-summary">' +
+                  '<div class="report-stat highlight"><div class="report-stat-value">R$ ' + total.toFixed(2).replace('.',',') + '</div><div class="report-stat-label">Faturamento Total</div></div>' +
+                  '<div class="report-stat"><div class="report-stat-value">' + count + '</div><div class="report-stat-label">Atendimentos</div></div>' +
+                  '<div class="report-stat"><div class="report-stat-value">R$ ' + avgTicket.toFixed(2).replace('.',',') + '</div><div class="report-stat-label">Ticket Médio</div></div>' +
+                  '<div class="report-stat"><div class="report-stat-value">' + topServiceQty + 'x</div><div class="report-stat-label">' + topServiceName + '</div></div>' +
+                '</div>' +
+                '<div class="report-section-title">Todos os Atendimentos</div>' +
+                '<div class="report-list" id="report-list-inner"></div>';
+            const listEl = document.getElementById('report-list-inner');
+            if (allApps.length === 0) {
+                listEl.innerHTML = '<div class="empty-state">Nenhum atendimento registrado.</div>';
+            } else {
+                allApps.forEach(app => {
+                    const price = app.price || 0;
+                    const item = document.createElement('div'); item.className = 'report-item';
+                    item.innerHTML =
+                        '<div class="report-item-info">' +
+                          '<div class="report-item-name">' + app.name + '</div>' +
+                          '<div class="report-item-meta">' + app.service + '</div>' +
+                          '<div class="report-item-meta">' + app.displayDate + ' - ' + app.hour + '</div>' +
+                        '</div>' +
+                        '<div class="report-item-price">R$ ' + price.toFixed(2).replace('.',',') + '</div>';
+                    listEl.appendChild(item);
+                });
             }
-        } catch (error) { alert("ERRO AO LIBERAR."); }
+        } catch(e) {
+            container.innerHTML = '<div class="empty-state">Erro ao carregar relatório.</div>';
+            console.error(e);
+        }
     }
 
+    // NAVEGACAO
     window.goBack = function(toStep) {
         document.querySelectorAll('.step-container').forEach(s => s.classList.add('hidden'));
         document.getElementById('step-services').classList.add('hidden');
-        if(toStep === 'services') document.getElementById('step-services').classList.remove('hidden');
-        else document.getElementById(`step-${toStep}`).classList.remove('hidden');
+        if (toStep === 'services') document.getElementById('step-services').classList.remove('hidden');
+        else document.getElementById('step-' + toStep).classList.remove('hidden');
     }
 </script>
-
 </body>
 </html>
