@@ -602,26 +602,48 @@
         if (!dateInput) { alert("Selecione uma data."); return; }
         const container = document.getElementById('hours-manager-container');
         container.innerHTML = '<div class="empty-state">Carregando...</div>';
+
+        // Horarios habilitados salvos no Firebase (inclui padroes + customizados)
         let enabledHours = DEFAULT_HOURS.slice();
+        let savedCustom = [];
         try {
             const snap = await getDoc(doc(db, "config_horarios", dateInput));
-            if (snap.exists() && snap.data().hours) enabledHours = snap.data().hours;
+            if (snap.exists() && snap.data().hours) {
+                enabledHours = snap.data().hours;
+                savedCustom = enabledHours.filter(h => !DEFAULT_HOURS.includes(h));
+            }
         } catch(e) {}
+
+        // Horarios ja agendados por clientes
         let takenHours = [];
         try {
             const agSnap = await getDoc(doc(db, "agenda", dateInput));
             if (agSnap.exists()) takenHours = (agSnap.data().appointments || []).map(a => a.hour);
         } catch(e) {}
+
+        // Lista completa: padroes + customizados salvos + agendados
+        const allHoursSet = new Set([...DEFAULT_HOURS, ...savedCustom, ...takenHours]);
+        const allHours = Array.from(allHoursSet).sort((a, b) => {
+            const startA = a.split(' - ')[0] || a;
+            const startB = b.split(' - ')[0] || b;
+            return startA.localeCompare(startB);
+        });
+
         container.innerHTML = '';
-        DEFAULT_HOURS.forEach(hour => {
+        allHours.forEach(hour => {
+            const isDefault = DEFAULT_HOURS.includes(hour);
+            const isCustom = !isDefault;
             const isEnabled = enabledHours.includes(hour);
             const isTaken = takenHours.includes(hour);
-            const row = document.createElement('div'); row.className = 'hour-toggle-row';
+            const row = document.createElement('div');
+            row.className = 'hour-toggle-row' + (isCustom ? ' custom' : '');
             const takenLabel = isTaken ? ' <span style="font-size:11px;color:var(--accent-gold);font-weight:400;">agendado</span>' : '';
-            row.innerHTML = '<span class="hour-toggle-label">' + hour + takenLabel + '</span>' +
+            const customLabel = (isCustom && !isTaken) ? ' <span style="font-size:11px;color:var(--success-green);font-weight:400;">personalizado</span>' : '';
+            row.innerHTML = '<span class="hour-toggle-label">' + hour + takenLabel + customLabel + '</span>' +
                 '<label class="toggle-switch"><input type="checkbox" data-hour="' + hour + '"' + (isEnabled ? ' checked' : '') + (isTaken ? ' disabled' : '') + '><span class="toggle-slider"></span></label>';
             container.appendChild(row);
         });
+
         document.getElementById('hours-add-row').style.display = 'flex';
         document.getElementById('hours-save-bar').style.display = 'block';
         document.getElementById('hours-status').textContent = '';
