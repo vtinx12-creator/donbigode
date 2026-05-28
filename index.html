@@ -24,9 +24,12 @@
         }
         body { margin:0;padding:0;background-color:var(--bg-color);color:var(--text-main);font-family:'Inter',sans-serif;display:flex;justify-content:center;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased; }
         .container { width:100%;max-width:480px;background-color:var(--container-bg);padding:30px 20px;box-sizing:border-box;border-radius:24px;box-shadow:0 10px 40px rgba(0,0,0,0.08);margin:20px 10px; }
-        .scroll-cta { width:100%;padding:28px 16px;box-sizing:border-box;text-align:center;background:linear-gradient(135deg,#111827 0%,#1f2937 100%);border-radius:16px;margin-bottom:4px; }
-        .scroll-cta-text { font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1.3;margin:8px 0; }
-        .scroll-cta-arrow { font-size:20px;color:var(--accent-gold);animation:bounce 1.4s infinite; }
+        .scroll-cta { width:100%;padding:28px 16px 24px;box-sizing:border-box;text-align:center;background:linear-gradient(135deg,#111827 0%,#1f2937 100%);border-radius:16px;margin-bottom:4px; }
+        .scroll-cta-welcome { font-size:13px;font-weight:500;color:#9ca3af;letter-spacing:0.3px;margin-bottom:6px; }
+        .scroll-cta-brand { font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1.2; }
+        .scroll-cta-divider { width:40px;height:2px;background:var(--accent-gold);border-radius:2px;margin:14px auto 14px; }
+        .scroll-cta-text { font-size:15px;font-weight:600;color:#d1d5db;letter-spacing:-0.2px;margin:0 0 12px 0; }
+        .scroll-cta-arrow { font-size:18px;color:var(--accent-gold);animation:bounce 1.4s infinite; }
         @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
         .banner-container { width:100%;margin-bottom:20px;text-align:center; }
         .banner-img { width:100%;height:auto;border-radius:16px;object-fit:cover; }
@@ -137,7 +140,9 @@
 
     <div class="banner-container">
         <div class="scroll-cta">
-            <div class="scroll-cta-arrow">⬇</div>
+            <div class="scroll-cta-welcome">✂️ Bem-vindo ao agendamento online da</div>
+            <div class="scroll-cta-brand">Don Bigode Barbearia</div>
+            <div class="scroll-cta-divider"></div>
             <div class="scroll-cta-text">Role para baixo para fazer seu agendamento</div>
             <div class="scroll-cta-arrow">⬇</div>
         </div>
@@ -225,9 +230,9 @@
     <div id="step-admin" class="step-container hidden">
         <div class="section-title" style="color:var(--accent-gold);">Painel Don Bigode</div>
         <div class="admin-tabs">
-            <button class="admin-tab active" onclick="switchAdminTab('agenda')">📅 Agenda do Dia</button>
-            <button class="admin-tab" onclick="switchAdminTab('futuros')">🗓 Futuros</button>
-            <button class="admin-tab" onclick="switchAdminTab('horarios')">⏱ Horários</button>
+            <button class="admin-tab active" onclick="switchAdminTab('agenda')">📅 Hoje</button>
+            <button class="admin-tab" onclick="switchAdminTab('futuros')">🔮 Futuros</button>
+            <button class="admin-tab" onclick="switchAdminTab('horarios')">🕐 Horários</button>
             <button class="admin-tab" onclick="switchAdminTab('relatorios')">📊 Relatórios</button>
         </div>
         <div id="admin-tab-agenda" class="admin-tab-content active">
